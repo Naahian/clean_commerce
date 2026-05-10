@@ -1,6 +1,5 @@
 # clean_commerce
-
-A new Flutter project.
+Just another e-commerce app with supabase.
 
 ## Getting Started
 
