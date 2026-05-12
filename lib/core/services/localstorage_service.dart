@@ -16,6 +16,8 @@ class LocalDbKeys {
 
   static const String settings = "settings";
   static const String isFirstTime = "isFirstTime";
+  static const String isDark = "isDark";
+  static const String currency = "currency";
 
   static List<String> allBoxes = [userBox, productBox, cartBox, settingsBox];
 }
@@ -44,7 +46,7 @@ class LocalStorageService {
     try {
       await _userBox.put(LocalDbKeys.cachedProfile, user);
     } on HiveError catch (e) {
-      throw Exception('Hive error: ');
+      throw Exception('Hive error: $e');
     }
   }
 
@@ -62,7 +64,7 @@ class LocalStorageService {
     try {
       await _userBox.delete(LocalDbKeys.cachedProfile);
     } on HiveError catch (e) {
-      throw Exception('Hive error: ');
+      throw Exception('Hive error: $e');
     }
   }
 
@@ -72,7 +74,7 @@ class LocalStorageService {
     try {
       await _productBox.put(LocalDbKeys.cachedProducts, products);
     } on HiveError catch (e) {
-      throw Exception('Hive error: ');
+      throw Exception('Hive error: $e');
     }
   }
 
@@ -92,7 +94,7 @@ class LocalStorageService {
     try {
       await _cartBox.put(LocalDbKeys.cachedCart, cart);
     } on HiveError catch (e) {
-      throw Exception('Hive error: ');
+      throw Exception('Hive error: $e');
     }
   }
 
@@ -111,13 +113,28 @@ class LocalStorageService {
   }
 
   // SETTINGS
+  bool isFirstTime() {
+    return _settingsBox.get(LocalDbKeys.isFirstTime, defaultValue: true);
+  }
 
   Future<void> setFirstTime(bool value) async {
     await _settingsBox.put(LocalDbKeys.isFirstTime, value);
   }
 
-  bool isFirstTime() {
-    return _settingsBox.get(LocalDbKeys.isFirstTime, defaultValue: true);
+  bool isDark() {
+    return _settingsBox.get(LocalDbKeys.isDark, defaultValue: true);
+  }
+
+  Future<void> setDark(bool value) async {
+    await _settingsBox.put(LocalDbKeys.isDark, value);
+  }
+
+  String getCurrency() {
+    return _settingsBox.get(LocalDbKeys.currency, defaultValue: "BDT");
+  }
+
+  Future<void> setCurrency(String value) async {
+    await _settingsBox.put(LocalDbKeys.currency, value);
   }
 
   // GLOBAL CLEAR
@@ -126,7 +143,7 @@ class LocalStorageService {
     try {
       await Future.wait(LocalDbKeys.allBoxes.map((b) => Hive.box(b).clear()));
     } on HiveError catch (e) {
-      throw Exception('Hive error: ');
+      throw Exception('Hive error: $e');
     }
   }
 }

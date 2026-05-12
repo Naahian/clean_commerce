@@ -1,3 +1,4 @@
+import 'package:clean_commerce/features/presentation/viewmodels/app_settings_notifier.dart';
 import 'package:clean_commerce/features/data/repositories.dart';
 import 'package:clean_commerce/features/data/services/comment_service.dart';
 import 'package:clean_commerce/features/data/services/order_service.dart';
@@ -39,7 +40,7 @@ class AppDependency {
     getIt.registerLazySingleton<LocalStorageService>(
       () => LocalStorageService(),
     );
-    getIt<LocalStorageService>().init();
+    await getIt<LocalStorageService>().init();
 
     // Remote Services
     getIt.registerLazySingleton<AuthService>(() => AuthService(getIt()));
@@ -100,7 +101,5 @@ class AppDependency {
       anonKey: dotenv.get("ANON_KEY"),
     );
     getIt.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
-
-    if (kDebugMode) print("[APP INIT] Supabase Initialized.");
   }
 }
