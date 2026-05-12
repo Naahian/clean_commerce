@@ -1,5 +1,3 @@
-import 'dart:io';
-
 class ApiEndpoints {
   static final baseUrl = "https://dummyjson.com";
 
@@ -12,4 +10,20 @@ class ApiEndpoints {
   static final users = "/users";
   static final posts = "/posts";
   static final randomImage = "/icon";
+}
+
+// ignore: constant_identifier_names
+enum Currency { BDT, USD }
+
+enum TransactionType { payment, coupon }
+
+enum TransactionStatus { pending, completed, rejected }
+
+enum OrderStatus {
+  pending,
+  processing,
+  shipped,
+  delivered,
+  reqCancel,
+  canceled,
 }

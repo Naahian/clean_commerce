@@ -1,7 +1,5 @@
+import 'package:clean_commerce/core/constansts.dart';
 import 'package:clean_commerce/features/data/models/transaction_model.dart';
-
-// ignore: constant_identifier_names
-enum Currency { USD, BDT }
 
 class CreateTransactionEntity {
   final String userId;
@@ -9,6 +7,7 @@ class CreateTransactionEntity {
   final double amount;
   final String? currency;
   final String? referenceId;
+  final DateTime? date;
   final Map<String, dynamic>? metadata;
 
   const CreateTransactionEntity({
@@ -18,12 +17,13 @@ class CreateTransactionEntity {
     this.currency = 'USD',
     this.referenceId,
     this.metadata,
+    required this.date,
   });
 }
 
 class TransactionEntity extends CreateTransactionEntity {
   final String id;
-  final String status;
+  final TransactionStatus status;
 
   const TransactionEntity({
     required this.id,
@@ -31,20 +31,34 @@ class TransactionEntity extends CreateTransactionEntity {
     required super.type,
     required super.amount,
     super.currency = 'USD',
-    this.status = 'pending',
+    this.status = TransactionStatus.pending,
     super.referenceId,
     super.metadata,
+    required super.date,
   });
   factory TransactionEntity.fromTransactionModel(TransactionModel model) {
+    TransactionStatus status;
+
+    if (model.status == "pending") {
+      status = TransactionStatus.pending;
+    } else if (model.status == "completed") {
+      status = TransactionStatus.completed;
+    } else if (model.status == "rejected") {
+      status = TransactionStatus.rejected;
+    } else {
+      status = TransactionStatus.pending;
+    }
+
     return TransactionEntity(
       id: model.id,
       userId: model.userId,
       type: model.type,
       amount: model.amount,
       currency: model.currency,
-      status: model.status,
+      status: status,
       referenceId: model.referenceId,
       metadata: model.metadata,
+      date: model.createdAt,
     );
   }
 }

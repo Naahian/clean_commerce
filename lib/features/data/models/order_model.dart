@@ -1,14 +1,5 @@
 import 'package:clean_commerce/features/domain/entity/order_entity.dart';
 
-enum OrderStatus {
-  pending,
-  processing,
-  shipped,
-  delivered,
-  reqCancel,
-  canceled,
-}
-
 class CreateOrderModel {
   final String userId;
   final String status;

@@ -1,5 +1,6 @@
 // categories_widget.dart
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 class CategoriesWidget extends StatelessWidget {
   const CategoriesWidget({super.key});
@@ -22,41 +23,45 @@ class CategoriesWidget extends StatelessWidget {
     final theme = Theme.of(context);
 
     return SizedBox(
-      height: 100,
+      height: 11.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 3.w),
         itemCount: categories.length,
         itemBuilder: (context, index) {
           final category = categories[index];
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: EdgeInsets.symmetric(horizontal: 2.w),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  width: 60,
-                  height: 60,
+                  width: 15.w,
+                  height: 15.w,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
                         Color(category['color']),
-                        Color(category['color']).withOpacity(0.7),
+                        Color(category['color']).withAlpha(70),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Color(category['color']).withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
+                        color: Color(category['color']).withAlpha(30),
+                        blurRadius: 10,
+                        offset: Offset(0, 1.5.h),
                       ),
                     ],
                   ),
-                  child: Icon(category['icon'], color: Colors.white, size: 30),
+                  child: Icon(
+                    category['icon'],
+                    color: Colors.white,
+                    size: 23.sp,
+                  ),
                 ),
-                const SizedBox(height: 8),
                 Text(
                   category['name'],
                   style: theme.textTheme.bodySmall?.copyWith(

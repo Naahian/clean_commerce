@@ -1,6 +1,11 @@
 import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
+import 'package:clean_commerce/features/presentation/views/auth/forgot_password.dart';
+import 'package:clean_commerce/features/presentation/views/auth/signup_screen.dart';
+import 'package:clean_commerce/features/presentation/widgets/custom_textformfield.dart';
+import 'package:clean_commerce/features/presentation/widgets/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'widgets/widgets.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -13,7 +18,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
-  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -24,43 +28,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [colorScheme.primaryFixed, colorScheme.tertiaryFixed],
-          ),
-        ),
-        child: Center(
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: size.height * 0.05,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildHeader(theme, colorScheme),
-                    const SizedBox(height: 48),
-                    _buildEmailField(controller, theme, colorScheme),
-                    const SizedBox(height: 16),
-                    _buildPasswordField(controller, theme, colorScheme),
-                    const SizedBox(height: 12),
-                    _buildOptionsRow(theme, colorScheme),
-                    const SizedBox(height: 24),
-                    _LoginButton(
-                      isLoading: state.isLoading,
-                      onPressed: () => _handleLogin(controller),
-                    ),
-                    const SizedBox(height: 24),
-                    _buildSignUpPrompt(theme, colorScheme),
-                    const SizedBox(height: 16),
-                    _buildSocialLogin(theme, colorScheme),
-                    SizedBox(height: 100),
-                  ],
-                ),
+      body: Center(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: size.height * 0.05,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildHeader(theme, colorScheme),
+                  const SizedBox(height: 48),
+                  _buildEmailField(controller),
+                  const SizedBox(height: 16),
+                  _buildPasswordField(controller),
+                  const SizedBox(height: 12),
+                  _buildForgotPassword(theme, colorScheme),
+                  const SizedBox(height: 24),
+                  _buildLoginBtn(state, controller),
+                  const SizedBox(height: 24),
+                  _buildSignUpPrompt(theme, colorScheme),
+                  const SizedBox(height: 16),
+                  _buildSocialLogin(theme, colorScheme),
+                  SizedBox(height: 100),
+                ],
               ),
             ),
           ),
@@ -69,28 +63,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
+  CustomTextFormField _buildEmailField(AuthController controller) {
+    return CustomTextFormField(
+      textController: _emailCtrl,
+      label: "Email",
+      hint: "yourmail@gmail.com",
+      obscureText: false,
+      prefixIcon: Icons.mail_outline,
+      validator: controller.emailValidator,
+    );
+  }
+
+  CustomTextFormField _buildPasswordField(AuthController controller) {
+    return CustomTextFormField(
+      textController: _passCtrl,
+      label: "Password",
+      hint: '',
+      obscureText: true,
+      prefixIcon: Icons.lock_outline,
+      validator: controller.passwordValidator,
+    );
+  }
+
+  AuthButton _buildLoginBtn(AuthState state, AuthController controller) {
+    return AuthButton(
+      text: "Login",
+      isLoading: state.isLoading,
+      onPressed: () => _handleLogin(controller),
+    );
+  }
+
   Widget _buildHeader(ThemeData theme, ColorScheme colorScheme) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [colorScheme.primaryFixed, colorScheme.tertiaryFixed],
-            ),
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.primaryFixedDim.withAlpha(150),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Icon(Icons.shopping_bag, size: 48, color: colorScheme.primary),
-        ),
+        Logo(),
         const SizedBox(height: 24),
         Text(
           "Clean Commerce",
@@ -110,90 +116,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildEmailField(
-    AuthController controller,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return TextFormField(
-      controller: _emailCtrl,
-      validator: controller.emailValidator,
-      keyboardType: TextInputType.emailAddress,
-      style: theme.textTheme.bodyMedium,
-      decoration: InputDecoration(
-        labelText: "Email Address",
-        hintText: "you@example.com",
-        prefixIcon: Icon(Icons.email_outlined, color: colorScheme.primary),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: colorScheme.outline),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
-        ),
-        filled: true,
-        fillColor: colorScheme.surface,
-        labelStyle: theme.textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPasswordField(
-    AuthController controller,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return TextFormField(
-      controller: _passCtrl,
-      obscureText: _obscurePassword,
-      validator: controller.passwordValidator,
-      style: theme.textTheme.bodyMedium,
-      decoration: InputDecoration(
-        labelText: "Password",
-        prefixIcon: Icon(Icons.lock_outline, color: colorScheme.primary),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _obscurePassword ? Icons.visibility_off : Icons.visibility,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          onPressed: () {
-            setState(() {
-              _obscurePassword = !_obscurePassword;
-            });
-          },
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: colorScheme.outline),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
-        ),
-        filled: true,
-        fillColor: colorScheme.surface,
-        labelStyle: theme.textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOptionsRow(ThemeData theme, ColorScheme colorScheme) {
+  TextButton _buildForgotPassword(ThemeData theme, ColorScheme colorScheme) {
     return TextButton(
       onPressed: () {
-        // TODO: Implement forgot password
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => ForgotPassword()));
       },
       child: Text(
         "Forgot Password?",
@@ -217,7 +145,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         TextButton(
           onPressed: () {
-            // TODO: Navigate to signup screen
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => SignupScreen()));
           },
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
@@ -241,9 +171,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       children: [
         Row(
           children: [
-            Expanded(
-              child: Divider(color: colorScheme.outline.withOpacity(0.3)),
-            ),
+            Expanded(child: Divider(color: colorScheme.outline.withAlpha(30))),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -253,37 +181,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
             ),
-            Expanded(
-              child: Divider(color: colorScheme.outline.withOpacity(0.3)),
-            ),
+            Expanded(child: Divider(color: colorScheme.outline.withAlpha(30))),
           ],
         ),
         const SizedBox(height: 24),
-        Row(
-          children: [
-            Expanded(
-              child: _SocialLoginButton(
-                icon: Icons.g_mobiledata,
-                label: "Google",
-                color: Colors.red,
-                onPressed: () {
-                  // TODO: Implement Google login
-                },
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _SocialLoginButton(
-                icon: Icons.apple,
-                label: "Apple",
-                color: Colors.black,
-                onPressed: () {
-                  // TODO: Implement Apple login
-                },
-              ),
-            ),
-          ],
+        SocialLoginButton(
+          icon: Icons.g_mobiledata,
+          label: "Google Login",
+          color: Colors.red,
+          onPressed: () {
+            // TODO: Implement Google login
+          },
         ),
+        const SizedBox(width: 16),
       ],
     );
   }
@@ -299,93 +209,5 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _emailCtrl.dispose();
     _passCtrl.dispose();
     super.dispose();
-  }
-}
-
-class _LoginButton extends StatelessWidget {
-  final bool isLoading;
-  final VoidCallback onPressed;
-
-  const _LoginButton({required this.isLoading, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return SizedBox(
-      height: 55,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: colorScheme.primary,
-          foregroundColor: colorScheme.onPrimary,
-          elevation: 3,
-          shadowColor: colorScheme.primary.withOpacity(0.4),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        child: isLoading
-            ? SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(
-                  color: colorScheme.onPrimary,
-                  strokeWidth: 2.5,
-                ),
-              )
-            : Text(
-                "Login",
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onPrimary,
-                ),
-              ),
-      ),
-    );
-  }
-}
-
-class _SocialLoginButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onPressed;
-
-  const _SocialLoginButton({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        side: BorderSide(color: colorScheme.outline.withOpacity(0.3)),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: colorScheme.onSurface,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

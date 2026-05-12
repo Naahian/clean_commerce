@@ -1,5 +1,5 @@
 import 'package:clean_commerce/features/presentation/views/auth/login_screen.dart';
-import 'package:clean_commerce/features/presentation/views/splash_screen.dart';
+import 'package:clean_commerce/features/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_commerce/features/presentation/views/home/home_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

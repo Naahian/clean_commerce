@@ -1,7 +1,5 @@
 import 'package:clean_commerce/features/domain/entity/transaction_entity.dart';
 
-enum TransactionType { payment, coupon }
-
 class CreateTransactionModel {
   final String userId;
   final String type;
