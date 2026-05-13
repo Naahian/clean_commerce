@@ -1,15 +1,23 @@
 import 'package:clean_commerce/features/domain/entity/comment_entity.dart';
 import 'package:clean_commerce/features/domain/entity/order_entity.dart';
 import 'package:clean_commerce/features/domain/entity/product_entity.dart';
+import 'package:clean_commerce/features/domain/entity/profile_entity.dart';
 import 'package:clean_commerce/features/domain/entity/result_entity.dart';
 import 'package:clean_commerce/features/domain/entity/transaction_entity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class AuthRepository {
   Future<Result> login(String email, String password);
-  Future<Result> signUp(String email, String password, String displayName);
+  Future<Result> googleSignIn();
+  Future<Result> signUp(
+    String email,
+    String password,
+    String displayName,
+    String phone,
+  );
+  Future<Result> update(String? phone, String? address);
   Future<Result> logout();
-  Future<Result<User>> getUserInfo();
+  Future<Result<ProfileEntity>> getUserInfo();
   Future<Result> deleteAccount();
 }
 

@@ -78,23 +78,27 @@ class BottomNavBar extends StatelessWidget {
     // Fixed: Removed the extra function wrapper
     switch (index) {
       case 0:
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
+          (route) => false,
         );
         break;
       case 1:
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const SearchScreen()),
+          (route) => false,
         );
         break;
       case 2:
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const CartScreen()),
+          (route) => false,
         );
         break;
       case 3:
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const ProfileScreen()),
+          (route) => false,
         );
         break;
       default:

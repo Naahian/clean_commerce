@@ -2,6 +2,7 @@ import 'package:clean_commerce/core/services/localstorage_service.dart';
 import 'package:clean_commerce/features/data/models/auth_models.dart';
 import 'package:clean_commerce/features/data/repositories.dart';
 import 'package:clean_commerce/features/data/services/auth_service.dart';
+import 'package:clean_commerce/features/domain/entity/profile_entity.dart';
 import 'package:clean_commerce/features/domain/entity/result_entity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -32,6 +33,7 @@ class AuthRepositoryImp implements AuthRepository {
     String email,
     String password,
     String displayName,
+    String phone,
   ) async {
     try {
       final result = await remote.createUser(
@@ -39,13 +41,13 @@ class AuthRepositoryImp implements AuthRepository {
           email: email,
           password: password,
           displayName: displayName,
+          phone: phone,
         ),
       );
 
       return Result(
         success: true,
-        message: "Account created successfully.",
-        data: result,
+        message: "Account created for ${result.email}",
       );
     } catch (e) {
       return Result(success: false, message: e.toString());
@@ -66,17 +68,23 @@ class AuthRepositoryImp implements AuthRepository {
   }
 
   @override
-  Future<Result<User>> getUserInfo() async {
+  Future<Result<ProfileEntity>> getUserInfo() async {
     try {
-      final user = await remote.getAuthUser();
+      final currentUser = Supabase.instance.client.auth.currentUser;
+      if (currentUser == null) throw Exception("Not authenticated!");
+
+      final user = await remote.getUser(id: currentUser.id);
 
       if (user == null) {
         return Result(success: false, message: "User not found.");
       }
 
-      return Result<User>(success: true, data: user);
+      return Result<ProfileEntity>(
+        success: true,
+        data: ProfileEntity.fromProfileModel(user),
+      );
     } catch (e) {
-      return Result<User>(success: false, message: e.toString());
+      return Result<ProfileEntity>(success: false, message: e.toString());
     }
   }
 
@@ -88,6 +96,35 @@ class AuthRepositoryImp implements AuthRepository {
       return Result(success: true, message: "Logged Out.");
     } catch (e) {
       return Result(success: false, message: "Error Logging Out.");
+    }
+  }
+
+  @override
+  Future<Result<dynamic>> googleSignIn() async {
+    try {
+      await remote.googleSignIn();
+
+      return Result(success: true, message: "Successfully Logged In.");
+    } catch (e) {
+      return Result(success: false, message: e.toString());
+    }
+  }
+
+  @override
+  Future<Result<dynamic>> update(String? phone, String? address) async {
+    try {
+      final result = await remote.updateAuthUser(
+        phone: phone,
+        address: address,
+      );
+
+      return Result(
+        success: true,
+        message: "Update User Info.",
+        data: ProfileEntity.fromProfileModel(result),
+      );
+    } catch (e) {
+      return Result(success: false, message: e.toString());
     }
   }
 }

@@ -52,7 +52,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 24),
                   _buildSignUpPrompt(theme, colorScheme),
                   const SizedBox(height: 16),
-                  _buildSocialLogin(theme, colorScheme),
+                  _buildSocialLogin(controller, theme, colorScheme),
                   SizedBox(height: 100),
                 ],
               ),
@@ -166,7 +166,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildSocialLogin(ThemeData theme, ColorScheme colorScheme) {
+  Widget _buildSocialLogin(
+    AuthController controller,
+    ThemeData theme,
+    ColorScheme colorScheme,
+  ) {
     return Column(
       children: [
         Row(
@@ -189,9 +193,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           icon: Icons.g_mobiledata,
           label: "Google Login",
           color: Colors.red,
-          onPressed: () {
-            // TODO: Implement Google login
-          },
+          onPressed: () => controller.googleSignIn(),
         ),
         const SizedBox(width: 16),
       ],

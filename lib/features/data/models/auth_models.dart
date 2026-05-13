@@ -13,17 +13,20 @@ class CreateUserModel {
   final String email;
   final String password;
   final String? displayName;
+  final String? phone;
 
   const CreateUserModel({
     required this.email,
     required this.password,
     this.displayName,
+    this.phone,
   });
 
   Map<String, dynamic> toJson() {
     return {
       "email": email,
       "password": password,
+      "phone": phone,
       "data": {"full_name": displayName},
     };
   }

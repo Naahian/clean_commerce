@@ -15,7 +15,7 @@ class EditDialog extends StatefulWidget {
     required this.title,
     required this.currentValue,
     required this.onSave,
-    required this.inputType,
+    this.inputType = TextInputType.text,
     this.hintText,
     this.validator,
     this.isSelectable = false,

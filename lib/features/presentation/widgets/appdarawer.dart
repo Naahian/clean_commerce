@@ -1,5 +1,6 @@
-import 'package:clean_commerce/features/presentation/viewmodels/app_settings_notifier.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
 import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
+import 'package:clean_commerce/features/presentation/views/auth/auth_wrapper.dart';
 import 'package:clean_commerce/features/presentation/views/home/home_screen.dart';
 import 'package:clean_commerce/features/presentation/views/profile/recentorders_screen.dart';
 import 'package:clean_commerce/features/presentation/widgets/edit_dialog.dart';
@@ -8,11 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class CustomDrawer extends ConsumerWidget {
+class CustomDrawer extends ConsumerStatefulWidget {
   const CustomDrawer({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends ConsumerState<CustomDrawer> {
+  @override
+  Widget build(BuildContext context) {
     final controller = ref.read(authControllerProvider.notifier);
     final settingsState = ref.watch(settingsProvider);
     final settingsNotifier = ref.watch(settingsProvider.notifier);
@@ -33,8 +39,9 @@ class CustomDrawer extends ConsumerWidget {
                     theme: theme,
                     icon: Icons.home,
                     title: 'Home',
-                    onTap: () => Navigator.of(context).pushReplacement(
+                    onTap: () => Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (_) => const HomeScreen()),
+                      (route) => false,
                     ),
                   ),
                   _buildDrawerItem(
@@ -82,7 +89,17 @@ class CustomDrawer extends ConsumerWidget {
                     theme: theme,
                     icon: Icons.logout,
                     title: 'Logout',
-                    onTap: () => controller.logout(),
+                    onTap: () {
+                      controller.logout();
+                      if (mounted) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (_) => const AuthWrapper(),
+                          ),
+                          (route) => false,
+                        );
+                      }
+                    },
                     isDestructive: true,
                   ),
                 ],

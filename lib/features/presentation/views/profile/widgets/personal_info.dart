@@ -1,35 +1,35 @@
 import 'package:clean_commerce/core/constansts.dart';
 import 'package:clean_commerce/features/data/models/transaction_model.dart';
 import 'package:clean_commerce/features/domain/entity/transaction_entity.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
 import 'package:clean_commerce/features/presentation/views/profile/widgets/widgets.dart';
 import 'package:clean_commerce/features/presentation/widgets/dialog_action.dart';
 import 'package:clean_commerce/features/presentation/widgets/edit_dialog.dart';
 import 'package:clean_commerce/features/presentation/views/profile/widgets/infocard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class PersonalInfo extends StatefulWidget {
-  const PersonalInfo({super.key});
+class PersonalInfo extends ConsumerWidget {
+  PersonalInfo({super.key});
 
-  @override
-  State<PersonalInfo> createState() => _PersonalInfoState();
-}
-
-class _PersonalInfoState extends State<PersonalInfo> {
-  // Track editable values
-  String phoneNumber = '+1 234 567 8900';
-  String address = 'New York, USA';
-  final String email = 'john.doe@example.com';
   final TransactionEntity transaction = TransactionEntity(
     id: 'TRX-YXZ1313R0F1',
     userId: '1',
-    type: TransactionType.payment.name,
+    type: "payment",
     amount: 99.99,
     date: DateTime.now(),
   );
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final authCtrl = ref.read(authControllerProvider.notifier);
+    final authState = ref.watch(authControllerProvider);
+
+    final email = authState.email;
+    final phone = authState.profile?.phone ?? 0;
+    final address = authState.profile?.address ?? 'none';
 
     return SliverList(
       delegate: SliverChildListDelegate.fixed([
@@ -37,16 +37,31 @@ class _PersonalInfoState extends State<PersonalInfo> {
         InfoCard(
           icon: Icons.phone_outlined,
           label: "Phone",
-          value: phoneNumber,
+          value: "$phone",
           isEdit: true,
-          onTap: () {},
+          onTap: () => showDialog(
+            context: context,
+            builder: (context) => EditDialog(
+              title: "Edit Phone",
+              currentValue: "$phone",
+              onSave: (val) => authCtrl.updatePhone(val),
+              inputType: TextInputType.phone,
+            ),
+          ),
         ),
         InfoCard(
           icon: Icons.home_work_outlined,
           label: "Address",
           value: address,
           isEdit: true,
-          onTap: () {},
+          onTap: () => showDialog(
+            context: context,
+            builder: (context) => EditDialog(
+              title: "Edit Address",
+              currentValue: address,
+              onSave: (val) => authCtrl.updateAddress(val),
+            ),
+          ),
         ),
         InfoCard(
           icon: Icons.delete_forever,

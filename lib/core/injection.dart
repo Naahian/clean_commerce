@@ -1,4 +1,3 @@
-import 'package:clean_commerce/features/presentation/viewmodels/app_settings_notifier.dart';
 import 'package:clean_commerce/features/data/repositories.dart';
 import 'package:clean_commerce/features/data/services/comment_service.dart';
 import 'package:clean_commerce/features/data/services/order_service.dart';
@@ -99,7 +98,9 @@ class AppDependency {
     await Supabase.initialize(
       url: dotenv.get("DATABASE_URL"),
       anonKey: dotenv.get("ANON_KEY"),
+      authOptions: FlutterAuthClientOptions(authFlowType: AuthFlowType.pkce),
     );
+
     getIt.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
   }
 }

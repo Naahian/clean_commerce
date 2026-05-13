@@ -22,7 +22,7 @@ class InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final color = isDanger ? colorScheme.errorContainer : colorScheme.primary;
+    final color = isDanger ? Colors.red.withAlpha(150) : colorScheme.primary;
     return ListTile(
       dense: true,
       leading: Container(
@@ -43,7 +43,7 @@ class InfoCard extends StatelessWidget {
         value,
         style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w500,
-          color: isDanger ? colorScheme.errorContainer : colorScheme.onSurface,
+          color: isDanger ? Colors.red.withAlpha(150) : colorScheme.onSurface,
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,

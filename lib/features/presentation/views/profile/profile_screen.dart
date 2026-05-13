@@ -1,4 +1,5 @@
 // profile_screen.dart
+import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
 import 'package:clean_commerce/features/presentation/views/profile/widgets/personal_info.dart';
 import 'package:clean_commerce/features/presentation/widgets/appdarawer.dart';
 import 'package:clean_commerce/features/presentation/widgets/bottomnavbar.dart';
@@ -21,6 +22,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => ref.read(authControllerProvider.notifier).getProfile(),
+    );
+
     _scrollController.addListener(_onScroll);
   }
 
@@ -35,7 +40,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       bottomNavigationBar: BottomNavBar(currentIndex: 3),
@@ -44,26 +48,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         controller: _scrollController,
         slivers: [
           // App Bar
-          SliverAppBar(
-            expandedHeight: 180,
-            floating: false,
-            pinned: true,
-            backgroundColor: _isScrolled
-                ? colorScheme.surface
-                : Colors.transparent,
-            elevation: _isScrolled ? 2 : 0,
-            flexibleSpace: FlexibleSpaceBar(
-              background: ProfileHeader(
-                isScrolled: _isScrolled,
-                username: "johndoe",
-                fullName: "John Doe",
-              ),
-              title: _isScrolled
-                  ? const Text("Profile", style: TextStyle(fontSize: 18))
-                  : null,
-              centerTitle: true,
-            ),
-          ),
+          ProfileTopBar(isScrolled: _isScrolled),
 
           // Stats Section
           SliverToBoxAdapter(

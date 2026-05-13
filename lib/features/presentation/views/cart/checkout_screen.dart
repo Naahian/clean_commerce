@@ -1,4 +1,4 @@
-import 'package:clean_commerce/features/presentation/viewmodels/app_settings_notifier.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
 import 'package:clean_commerce/features/presentation/views/cart/payment_screen.dart';
 import 'package:clean_commerce/features/presentation/views/cart/widgets/order_progress.dart';
 import 'package:clean_commerce/features/presentation/views/cart/widgets/payment_methods.dart';

@@ -51,7 +51,7 @@ class ProfileHeader extends StatelessWidget {
                   const SizedBox(height: 4),
                   // Username
                   Text(
-                    '@$username',
+                    username,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.white70,
                     ),

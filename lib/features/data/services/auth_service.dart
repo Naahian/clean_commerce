@@ -1,9 +1,11 @@
 import 'package:clean_commerce/features/data/models/auth_models.dart';
 import 'package:clean_commerce/features/data/models/profile_model.dart';
+import 'package:flutter/rendering.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
   final SupabaseClient _client;
+
   AuthService(this._client);
 
   /// AUTH
@@ -13,12 +15,13 @@ class AuthService {
       final response = await _client.auth.signUp(
         email: data.email,
         password: data.password,
-        data: {"display_name": data.displayName},
+
+        data: {"display_name": data.displayName, "phone": data.phone},
       );
 
       final user = response.user;
       if (user == null) {
-        throw Exception("Login Failed. User: null.");
+        throw Exception("User Create Failed. User: null.");
       } else {
         return user;
       }
@@ -48,6 +51,17 @@ class AuthService {
     }
   }
 
+  Future<void> googleSignIn() async {
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: "io.supabase.flutter://login-callback/",
+      );
+    } catch (e) {
+      throw Exception("Google login failed: $e");
+    }
+  }
+
   Future<User?> getAuthUser() async {
     try {
       final user = _client.auth.currentUser;
@@ -60,47 +74,31 @@ class AuthService {
     }
   }
 
-  Future<User> updateAuthUser({
-    String? email,
-    String? password,
-    String? username,
-    String? fullName,
-    String? avatarUrl,
-    String? bio,
-  }) async {
+  Future<ProfileModel> updateAuthUser({String? phone, String? address}) async {
     try {
-      // 1. Update Auth user (email/password/metadata)
-      final authResponse = await _client.auth.updateUser(
-        UserAttributes(
-          email: email,
-          password: password,
-          data: {"username": ?username, "full_name": ?fullName},
-        ),
-      );
-
-      final user = authResponse.user;
-
-      if (user == null) {
-        throw Exception("Update Failed. Auth user is null.");
-      }
-
-      // 2. Build profile update payload (only non-null fields)
-      final profileData = <String, dynamic>{
-        "username": ?username,
-        "full_name": ?fullName,
-        "avatar_url": ?avatarUrl,
-        "bio": ?bio,
+      final user = _client.auth.currentUser!;
+      final Map<String, dynamic> profileData = {
         "updated_at": DateTime.now().toIso8601String(),
       };
+      if (address != null) {
+        profileData["address"] = address;
+      }
+      if (phone != null && phone.isNotEmpty) {
+        profileData["phone"] = phone;
+      }
 
-      // 3. Update profile table
+      // Update profile table
       await _client.from('profiles').update(profileData).eq('id', user.id);
 
-      return user;
+      final data = await getUser(id: user.id);
+      if (data == null) throw AuthException("user is null");
+      return data;
     } on AuthException catch (e) {
-      throw Exception(" ${e.message}");
-    } catch (e) {
-      throw Exception("Unknown Error while updating user & profile.");
+      throw Exception(e.message);
+    } catch (e, stack) {
+      print(e);
+      print(stack);
+      throw Exception("Unknown error while updating user/profile.");
     }
   }
 
@@ -146,7 +144,7 @@ class AuthService {
       return ProfileModel.fromJson(response);
     } on PostgrestException catch (e) {
       throw Exception(" ${e.message}");
-    } catch (e) {
+    } catch (e, stack) {
       throw Exception("Unknow Error while getting User.");
     }
   }

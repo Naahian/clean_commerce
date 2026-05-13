@@ -2,9 +2,10 @@
 // profile_stats.dart
 import 'package:clean_commerce/features/presentation/views/profile/wishlist_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class ProfileStats extends StatelessWidget {
+class ProfileStats extends ConsumerWidget {
   final int totalOrders;
   final double totalSpent;
   final int wishlistCount;
@@ -17,7 +18,7 @@ class ProfileStats extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 

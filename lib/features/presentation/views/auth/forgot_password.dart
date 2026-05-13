@@ -1,5 +1,6 @@
 import 'package:clean_commerce/features/presentation/views/auth/widgets/auth_btn.dart';
 import 'package:clean_commerce/features/presentation/widgets/custom_textformfield.dart';
+import 'package:clean_commerce/features/presentation/widgets/dialog_action.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
@@ -44,8 +45,19 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             AuthButton(
               isLoading: false,
               onPressed: () {
-                _formKey.currentState?.validate();
+                // _formKey.currentState?.validate();
                 //TODO: implement api
+                showDialog(
+                  context: context,
+                  builder: (_) => DialogAction(
+                    title: "Feature Not Implemented Yet.",
+                    confirmText: "Ok",
+                    icon: Icons.construction,
+                    onSubmit: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                );
               },
               text: "Send Reset Request",
             ),

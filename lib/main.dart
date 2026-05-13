@@ -1,5 +1,5 @@
 import 'package:clean_commerce/core/injection.dart';
-import 'package:clean_commerce/features/presentation/viewmodels/app_settings_notifier.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
 import 'package:clean_commerce/features/presentation/views/auth/auth_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

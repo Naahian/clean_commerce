@@ -182,7 +182,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   void _handleSignup(AuthController controller) {
     if (_formKey.currentState!.validate()) {
-      // controller.signUp();
+      final fullName = '${_firstNameCtrl.text} ${_lastNameCtrl.text}';
+
+      controller.signUp(
+        email: _emailCtrl.text,
+        password: _passwordCtrl.text,
+        displayName: fullName,
+        phone: _phoneCtrl.text,
+      );
     }
   }
 
