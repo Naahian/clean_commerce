@@ -1,0 +1,42 @@
+{
+    "provider": "google_pay",
+    "data": {
+        "environment": "TEST",
+        "apiVersion": 2,
+        "apiVersionMinor": 0,
+        "allowedPaymentMethods": [
+            {
+                "type": "CARD",
+                "tokenizationSpecification": {
+                    "type": "PAYMENT_GATEWAY",
+                    "parameters": {
+                        "gateway": "example",
+                        "gatewayMerchantId": "real_id_not_used_due_to_security_constraints_justdemo"
+                    }
+                },
+                "parameters": {
+                    "allowedCardNetworks": [
+                        "VISA",
+                        "MASTERCARD"
+                    ],
+                    "allowedAuthMethods": [
+                        "PAN_ONLY",
+                        "CRYPTOGRAM_3DS"
+                    ],
+                    "billingAddressRequired": true,
+                    "billingAddressParameters": {
+                        "format": "FULL",
+                        "phoneNumberRequired": true
+                    }
+                }
+            }
+        ],
+        "merchantInfo": {
+            "merchantName": "Clean Commerce"
+        },
+        "transactionInfo": {
+            "countryCode": "BD",
+            "currencyCode": "BDT"
+        }
+    }
+}
