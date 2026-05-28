@@ -1,5 +1,4 @@
 import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
-import 'package:clean_commerce/features/presentation/views/home/notification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
@@ -34,15 +33,6 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
           Text("$name!", style: TextStyle(fontSize: 18.sp)),
         ],
       ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.notifications_outlined, color: bodyTextColor),
-          onPressed: () => Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => NotificationsScreen())),
-        ),
-        SizedBox(width: 3.w),
-      ],
     );
   }
 }

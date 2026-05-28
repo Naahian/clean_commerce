@@ -1,58 +1,47 @@
-import 'package:flutter/material.dart';
+import 'package:clean_commerce/core/constansts.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/search_controller.dart';
+import 'package:flutter/material.dart' hide SearchController;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class CategoryFilter extends StatefulWidget {
+class CategoryFilter extends ConsumerWidget {
   const CategoryFilter({super.key});
 
-  @override
-  State<CategoryFilter> createState() => _CategoryFilterState();
-}
-
-class _CategoryFilterState extends State<CategoryFilter> {
-  String _selectedCategory = 'Electronics';
-
-  final List<Map<String, dynamic>> categories = const [
-    {
-      'name': 'Electronics',
-      'icon': Icons.electrical_services,
-      'color': 0xFF4CAF50,
-    },
-    {'name': 'Fashion', 'icon': Icons.checkroom, 'color': 0xFF2196F3},
-    {'name': 'Home', 'icon': Icons.home_work, 'color': 0xFFFF9800},
-    {'name': 'Beauty', 'icon': Icons.spa, 'color': 0xFFE91E63},
-    {'name': 'Sports', 'icon': Icons.sports_soccer, 'color': 0xFF9C27B0},
-    {'name': 'Books', 'icon': Icons.book, 'color': 0xFF673AB7},
-  ];
+  void checkAnyFilterChange(SearchController ctrl) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => ctrl.onAnyFilterChange(),
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final categories = Categories.values;
+    final ctrl = ref.read(searchControllerProvider.notifier);
+    final state = ref.watch(searchControllerProvider);
+    // checkAnyFilterChange(ctrl);
 
     return SizedBox(
       height: 6.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 4.w),
-        itemCount: categories.length,
+        itemCount: Categories.values.length,
         itemBuilder: (context, index) {
           final category = categories[index];
-          final isSelected = _selectedCategory == category['name'];
-          final color = Color(category['color']);
+          final isSelected = state.selectedCategory == category.name;
+          final color = category.color;
 
           return Padding(
             padding: EdgeInsets.only(right: 2.w),
             child: FilterChip(
               selected: isSelected,
               label: Text(
-                category['name'],
+                category.name,
                 style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500),
               ),
               onSelected: (selected) {
-                setState(() {
-                  _selectedCategory = selected
-                      ? category['name']
-                      : _selectedCategory;
-                });
+                ctrl.filterByCategory(category.name);
               },
               backgroundColor: color.withAlpha(60),
               selectedColor: color,

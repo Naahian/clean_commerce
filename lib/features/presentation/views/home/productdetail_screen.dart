@@ -1,22 +1,14 @@
+import 'package:clean_commerce/features/domain/entities/product_entity.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
 import 'widgets/productdetail_widgets/productdetail_widgets.dart';
 
-class ProductDetailScreen extends ConsumerStatefulWidget {
-  final String productId;
-
-  const ProductDetailScreen({super.key, required this.productId});
-
-  @override
-  ConsumerState<ProductDetailScreen> createState() =>
-      _ProductDetailScreenState();
-}
-
-class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
-  int _quantity = 1;
-  bool _isFavorite = false;
+class ProductDetailScreen extends StatelessWidget {
+  final ProductEntity product;
+  const ProductDetailScreen({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -30,56 +22,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           children: [
             ProductImageSection(
               colorScheme: colorScheme,
-              isFavorite: _isFavorite,
-              onFavoriteToggle: () =>
-                  setState(() => _isFavorite = !_isFavorite),
+              images: product.images, // Pass product
             ),
             _ProductBodySection(
               theme: theme,
               colorScheme: colorScheme,
-              quantity: _quantity,
-              onQuantityChanged: (newQuantity) =>
-                  setState(() => _quantity = newQuantity),
+              quantity: product.quantity,
+              product: product, // Pass product
             ),
           ],
         ),
       ),
-      bottomNavigationBar: ProductBottomBar(
-        theme: theme,
-        colorScheme: colorScheme,
-        quantity: _quantity,
-        onQuantityChanged: (newQuantity) =>
-            setState(() => _quantity = newQuantity),
-      ),
-    );
-  }
-}
-
-class _FavoriteButton extends StatelessWidget {
-  final bool isFavorite;
-  final VoidCallback onPressed;
-
-  const _FavoriteButton({required this.isFavorite, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 8),
-        ],
-      ),
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(
-          isFavorite ? Icons.favorite : Icons.favorite_border,
-          color: isFavorite ? Colors.red : Colors.grey[600],
-          size: 24,
-        ),
-        padding: const EdgeInsets.all(8),
-      ),
+      bottomNavigationBar: ProductBottomBar(product: product),
     );
   }
 }
@@ -92,13 +46,13 @@ class _ProductBodySection extends StatelessWidget {
   final ThemeData theme;
   final ColorScheme colorScheme;
   final int quantity;
-  final Function(int) onQuantityChanged;
+  final dynamic product;
 
   const _ProductBodySection({
     required this.theme,
     required this.colorScheme,
     required this.quantity,
-    required this.onQuantityChanged,
+    required this.product,
   });
 
   @override
@@ -108,23 +62,35 @@ class _ProductBodySection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Wireless Headphones',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              height: 1.3,
-            ),
+          _buildName(),
+          SizedBox(height: 2.h),
+          _ProductPriceSection(
+            theme: theme,
+            colorScheme: colorScheme,
+            product: product,
           ),
           SizedBox(height: 2.h),
-          _ProductPriceSection(theme: theme, colorScheme: colorScheme),
-          SizedBox(height: 2.h),
-          _ProductStockInfo(theme: theme),
+          _ProductStockInfo(theme: theme, product: product),
           SizedBox(height: 2.5.h),
-          ProductTagsSection(theme: theme, colorScheme: colorScheme),
+          ProductTagsSection(
+            theme: theme,
+            colorScheme: colorScheme,
+            product: product,
+          ),
           SizedBox(height: 2.5.h),
-          _ProductDescription(theme: theme),
+          _ProductDescription(theme: theme, product: product),
           SizedBox(height: 5.h),
         ],
+      ),
+    );
+  }
+
+  Text _buildName() {
+    return Text(
+      product.name,
+      style: theme.textTheme.headlineSmall?.copyWith(
+        fontWeight: FontWeight.bold,
+        height: 1.3,
       ),
     );
   }
@@ -137,11 +103,23 @@ class _ProductBodySection extends StatelessWidget {
 class _ProductPriceSection extends StatelessWidget {
   final ThemeData theme;
   final ColorScheme colorScheme;
+  final dynamic product;
 
-  const _ProductPriceSection({required this.theme, required this.colorScheme});
+  const _ProductPriceSection({
+    required this.theme,
+    required this.colorScheme,
+    required this.product,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Calculate discounted price if applicable
+    final hasDiscount = product.discount != null && product.discount! > 0;
+    final originalPrice = product.price;
+    final discountedPrice = hasDiscount
+        ? originalPrice * (1 - (product.discount! / 100))
+        : originalPrice;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -153,12 +131,50 @@ class _ProductPriceSection extends StatelessWidget {
           ),
         ),
         SizedBox(height: 0.5.h),
-        Text(
-          '\$79.99',
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.primary,
-          ),
+        Consumer(
+          builder: (_, ref, _) {
+            String currency = ref.read(currencyProvider);
+            return Row(
+              children: [
+                Text(
+                  '$currency${discountedPrice.toStringAsFixed(2)}',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.primary,
+                  ),
+                ),
+                if (hasDiscount) ...[
+                  SizedBox(width: 2.w),
+                  Text(
+                    '$currency${originalPrice.toStringAsFixed(2)}',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      decoration: TextDecoration.lineThrough,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                  SizedBox(width: 2.w),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${product.discount}% OFF',
+                      style: const TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
         ),
       ],
     );
@@ -171,26 +187,29 @@ class _ProductPriceSection extends StatelessWidget {
 
 class _ProductStockInfo extends StatelessWidget {
   final ThemeData theme;
+  final dynamic product;
 
-  const _ProductStockInfo({required this.theme});
+  const _ProductStockInfo({required this.theme, required this.product});
 
   @override
   Widget build(BuildContext context) {
+    final isInStock = product.quantity > 0;
+
     return Row(
       children: [
         Container(
           width: 12,
           height: 12,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.green,
+            color: isInStock ? Colors.green : Colors.red,
           ),
         ),
         const SizedBox(width: 8),
         Text(
-          '10 items in stock',
+          isInStock ? '${product.quantity} items in stock' : 'Out of stock',
           style: theme.textTheme.bodySmall?.copyWith(
-            color: Colors.green[700],
+            color: isInStock ? Colors.green[700] : Colors.red[700],
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -205,8 +224,9 @@ class _ProductStockInfo extends StatelessWidget {
 
 class _ProductDescription extends StatelessWidget {
   final ThemeData theme;
+  final dynamic product;
 
-  const _ProductDescription({required this.theme});
+  const _ProductDescription({required this.theme, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -221,9 +241,7 @@ class _ProductDescription extends StatelessWidget {
         ),
         SizedBox(height: 1.h),
         Text(
-          'High-quality wireless headphones with active noise cancellation, '
-          '20-hour battery life, and ergonomic design. Perfect for music lovers, '
-          'professionals, and everyday use.',
+          product.description ?? 'No description available',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: Colors.grey[700],
             height: 1.5,
@@ -237,3 +255,61 @@ class _ProductDescription extends StatelessWidget {
 // ============================================================================
 // Product Tags Section
 // ============================================================================
+
+class ProductTagsSection extends StatelessWidget {
+  final ThemeData theme;
+  final ColorScheme colorScheme;
+  final dynamic product;
+
+  const ProductTagsSection({super.key, 
+    required this.theme,
+    required this.colorScheme,
+    required this.product,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Extract tags from metadata
+    final metadata = product.metadata;
+    final List<String> tags = metadata?['tags'] != null
+        ? List<String>.from(metadata['tags'])
+        : [];
+
+    if (tags.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Tags',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        SizedBox(height: 1.h),
+        Wrap(
+          spacing: 2.w,
+          runSpacing: 1.h,
+          children: tags.map((tag) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: colorScheme.primary.withOpacity(0.3)),
+              ),
+              child: Text(
+                tag,
+                style: TextStyle(
+                  color: colorScheme.primary,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+}

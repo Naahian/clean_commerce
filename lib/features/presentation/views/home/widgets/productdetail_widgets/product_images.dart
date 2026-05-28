@@ -3,14 +3,9 @@ import 'package:sizer/sizer.dart';
 
 class ProductImageSection extends StatefulWidget {
   final ColorScheme colorScheme;
-  final bool isFavorite;
-  final VoidCallback onFavoriteToggle;
+  final List<String> images;
 
-  const ProductImageSection({
-    required this.colorScheme,
-    required this.isFavorite,
-    required this.onFavoriteToggle,
-  });
+  const ProductImageSection({super.key, required this.colorScheme, required this.images});
 
   @override
   State<ProductImageSection> createState() => _ProductImageSectionState();
@@ -18,13 +13,6 @@ class ProductImageSection extends StatefulWidget {
 
 class _ProductImageSectionState extends State<ProductImageSection> {
   int _selectedImageIndex = 0;
-
-  final List<String> _images = [
-    'https://picsum.photos/id/20/400/400',
-    'https://picsum.photos/id/21/400/400',
-    'https://picsum.photos/id/22/400/400',
-    'https://picsum.photos/id/23/400/400',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +31,7 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                 ),
               ),
               child: Image.network(
-                _images[_selectedImageIndex],
+                widget.images[_selectedImageIndex],
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Center(
@@ -79,22 +67,15 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                 ),
               ),
             ),
+
             // Favorite button
-            Positioned(
-              top: 40,
-              right: 16,
-              child: _FavoriteButton(
-                isFavorite: widget.isFavorite,
-                onPressed: widget.onFavoriteToggle,
-              ),
-            ),
           ],
         ),
         // Thumbnail row
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
-            children: List.generate(_images.length, (index) {
+            children: List.generate(widget.images.length, (index) {
               final isSelected = _selectedImageIndex == index;
               return GestureDetector(
                 onTap: () {
@@ -106,7 +87,7 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                   width: 60,
                   height: 60,
                   margin: EdgeInsets.only(
-                    right: index != _images.length - 1 ? 12 : 0,
+                    right: index != widget.images.length - 1 ? 12 : 0,
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -120,7 +101,7 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      _images[index],
+                      widget.images[index],
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(

@@ -5,6 +5,7 @@ import 'package:clean_commerce/features/presentation/widgets/custom_textformfiel
 import 'package:clean_commerce/features/presentation/widgets/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sizer/sizer.dart';
 import 'widgets/widgets.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -28,7 +29,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: Center(
+      body: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          gradient: LinearGradient(
+            begin: AlignmentGeometry.topLeft,
+            end: AlignmentGeometry.bottomRight,
+            colors: [
+              colorScheme.primary.withAlpha(80),
+              Colors.transparent,
+              colorScheme.tertiary.withAlpha(80),
+            ],
+          ),
+        ),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
@@ -38,22 +51,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Form(
               key: _formKey,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SizedBox(height: 2.h),
                   _buildHeader(theme, colorScheme),
-                  const SizedBox(height: 48),
+                  SizedBox(height: 4.h),
                   _buildEmailField(controller),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 3.h),
                   _buildPasswordField(controller),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 1.h),
                   _buildForgotPassword(theme, colorScheme),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 2.h),
                   _buildLoginBtn(state, controller),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 2.h),
                   _buildSignUpPrompt(theme, colorScheme),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 2.h),
                   _buildSocialLogin(controller, theme, colorScheme),
-                  SizedBox(height: 100),
+                  SizedBox(height: 20.h),
                 ],
               ),
             ),

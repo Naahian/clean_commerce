@@ -1,4 +1,4 @@
-import 'package:clean_commerce/features/domain/entity/order_entity.dart';
+import 'package:clean_commerce/features/domain/entities/order_entity.dart';
 
 class CreateOrderModel {
   final String userId;
@@ -8,6 +8,7 @@ class CreateOrderModel {
   final String paymentStatus;
   final String? transactionId;
   final Map<String, dynamic>? metadata;
+  final List<dynamic> items;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -21,11 +22,12 @@ class CreateOrderModel {
     this.metadata,
     this.createdAt,
     this.updatedAt,
+    required this.items,
   });
 
-  /// Model → JSON
+  @override
   Map<String, dynamic> toJson() {
-    return {
+    final data = <String, dynamic>{
       'user_id': userId,
       'status': status,
       'total_amount': totalAmount,
@@ -33,9 +35,18 @@ class CreateOrderModel {
       'payment_status': paymentStatus,
       'transaction_id': transactionId,
       'metadata': metadata,
-      'created_at': createdAt?.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
+      'items': items,
     };
+
+    if (createdAt != null) {
+      data['created_at'] = createdAt!.toIso8601String();
+    }
+
+    if (updatedAt != null) {
+      data['updated_at'] = updatedAt!.toIso8601String();
+    }
+
+    return data;
   }
 
   factory CreateOrderModel.fromEntity(CreateOrderEntity entity) {
@@ -45,6 +56,7 @@ class CreateOrderModel {
       shippingAddress: entity.shippingAddress,
       transactionId: entity.transactionId,
       metadata: entity.metadata,
+      items: entity.items,
     );
   }
 }
@@ -62,9 +74,9 @@ class OrderModel extends CreateOrderModel {
     super.metadata,
     super.createdAt,
     super.updatedAt,
+    required super.items,
   });
 
-  /// JSON → Model
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       id: json['id'],
@@ -81,6 +93,7 @@ class OrderModel extends CreateOrderModel {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
           : null,
+      items: json['items'],
     );
   }
 
@@ -100,6 +113,7 @@ class OrderModel extends CreateOrderModel {
     String? paymentStatus,
     String? transactionId,
     Map<String, dynamic>? metadata,
+    List<Map<String, dynamic>>? items,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -114,6 +128,7 @@ class OrderModel extends CreateOrderModel {
       metadata: metadata ?? this.metadata,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      items: items ?? this.items,
     );
   }
 
@@ -127,6 +142,7 @@ class OrderModel extends CreateOrderModel {
         'shippingAddress: $shippingAddress, '
         'paymentStatus: $paymentStatus, '
         'transactionId: $transactionId'
+        'items: $items'
         ')';
   }
 }

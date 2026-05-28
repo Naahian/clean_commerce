@@ -19,12 +19,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _lastNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
-  final _addressCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmPasswordCtrl = TextEditingController();
-
-  String _selectedGender = 'Male';
-  final List<String> _genders = ['Male', 'Female', 'Other'];
 
   @override
   Widget build(BuildContext context) {
@@ -34,36 +30,57 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Create Account"), centerTitle: true),
+      extendBodyBehindAppBar: true,
+
+      appBar: AppBar(
+        title: const Text("Create Account"),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildHeader(theme, colorScheme),
-                SizedBox(height: 3.h),
-                _buildNameRow(),
-                SizedBox(height: 2.h),
-                _buildEmailField(controller),
-                SizedBox(height: 2.h),
-                _buildPhoneField(),
-                SizedBox(height: 2.h),
-                _buildPasswordField(controller),
-                SizedBox(height: 2.h),
-                _buildConfirmPasswordField(),
-                SizedBox(height: 3.h),
-                AuthButton(
-                  text: 'Sign Up',
-                  isLoading: state.isLoading,
-                  onPressed: () => _handleSignup(controller),
-                ),
-                SizedBox(height: 2.h),
-                _LoginPrompt(),
-                SizedBox(height: 3.h),
+        child: Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            gradient: LinearGradient(
+              begin: AlignmentGeometry.topLeft,
+              end: AlignmentGeometry.bottomRight,
+              colors: [
+                colorScheme.primary.withAlpha(80),
+                Colors.transparent,
+                colorScheme.tertiary.withAlpha(80),
               ],
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildHeader(theme, colorScheme),
+                  SizedBox(height: 4.h),
+                  _buildNameRow(),
+                  SizedBox(height: 2.h),
+                  _buildEmailField(controller),
+                  SizedBox(height: 2.h),
+                  _buildPhoneField(),
+                  SizedBox(height: 2.h),
+                  _buildPasswordField(controller),
+                  SizedBox(height: 2.h),
+                  _buildConfirmPasswordField(),
+                  SizedBox(height: 3.h),
+                  AuthButton(
+                    text: 'Sign Up',
+                    isLoading: state.isLoading,
+                    onPressed: () => _handleSignup(controller),
+                  ),
+                  SizedBox(height: 3.h),
+                  _LoginPrompt(),
+                  SizedBox(height: 10.h),
+                ],
+              ),
             ),
           ),
         ),
@@ -143,17 +160,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     );
   }
 
-  Widget _buildAddressField() {
-    return CustomTextFormField(
-      textController: _addressCtrl,
-      label: "Address",
-      hint: "123 Main Street, City",
-      obscureText: false,
-      prefixIcon: Icons.location_on_outlined,
-      validator: (value) => value?.isEmpty == true ? 'Enter address' : null,
-    );
-  }
-
   Widget _buildPasswordField(AuthController controller) {
     return CustomTextFormField(
       textController: _passwordCtrl,
@@ -199,7 +205,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     _lastNameCtrl.dispose();
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
-    _addressCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmPasswordCtrl.dispose();
     super.dispose();

@@ -1,7 +1,4 @@
-import 'package:clean_commerce/core/constansts.dart';
-import 'package:clean_commerce/core/injection.dart';
 import 'package:clean_commerce/core/services/localstorage_service.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // State class
@@ -27,13 +24,22 @@ class AppSettingsState {
       isFirstLaunch: isFirstLaunch ?? this.isFirstLaunch,
     );
   }
+
+  // Getter for currency symbol
+  String get currencySymbol {
+    switch (currency) {
+      case "BDT":
+        return '৳';
+      case "USD":
+        return '\$';
+      default:
+        return '\$';
+    }
+  }
 }
 
-final localStorageProvider = Provider<LocalStorageService>(
-  (_) => getIt<LocalStorageService>(),
-);
-
-// Notifier class
+// CONTROLLER
+// ----------------------------------------------------------------
 class AppSettingsNotifier extends Notifier<AppSettingsState> {
   late final LocalStorageService _local;
 
@@ -85,8 +91,12 @@ class AppSettingsNotifier extends Notifier<AppSettingsState> {
   }
 }
 
-// Provider
+// PROVIDERS
 final settingsProvider =
     NotifierProvider<AppSettingsNotifier, AppSettingsState>(
       () => AppSettingsNotifier(),
     );
+
+final currencyProvider = Provider<String>((ref) {
+  return ref.watch(settingsProvider).currencySymbol;
+});

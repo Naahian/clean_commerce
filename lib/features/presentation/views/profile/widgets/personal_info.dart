@@ -1,6 +1,3 @@
-import 'package:clean_commerce/core/constansts.dart';
-import 'package:clean_commerce/features/data/models/transaction_model.dart';
-import 'package:clean_commerce/features/domain/entity/transaction_entity.dart';
 import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
 import 'package:clean_commerce/features/presentation/views/profile/widgets/widgets.dart';
 import 'package:clean_commerce/features/presentation/widgets/dialog_action.dart';
@@ -8,22 +5,12 @@ import 'package:clean_commerce/features/presentation/widgets/edit_dialog.dart';
 import 'package:clean_commerce/features/presentation/views/profile/widgets/infocard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sizer/sizer.dart';
 
 class PersonalInfo extends ConsumerWidget {
-  PersonalInfo({super.key});
-
-  final TransactionEntity transaction = TransactionEntity(
-    id: 'TRX-YXZ1313R0F1',
-    userId: '1',
-    type: "payment",
-    amount: 99.99,
-    date: DateTime.now(),
-  );
+  const PersonalInfo({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final authCtrl = ref.read(authControllerProvider.notifier);
     final authState = ref.watch(authControllerProvider);
 
@@ -79,14 +66,6 @@ class PersonalInfo extends ConsumerWidget {
             ),
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
-          child: Text(
-            "Most Recent Transaction",
-            style: theme.textTheme.titleLarge,
-          ),
-        ),
-        TransactionItem(transaction: transaction, isTransaction: true),
       ]),
     );
   }

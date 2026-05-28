@@ -1,21 +1,32 @@
-import 'package:clean_commerce/features/presentation/views/home/productdetail_screen.dart';
+import 'package:clean_commerce/features/domain/entities/product_entity.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductCard extends StatelessWidget {
   final bool isBig;
-  const ProductCard({super.key, this.isBig = false});
+  final ProductEntity product;
+  final VoidCallback? onTap;
+
+  const ProductCard({
+    super.key,
+    this.isBig = false,
+    required this.product,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final pDiscount = product.discount == 0 ? 1 : product.discount ?? 0;
+    final newPrice = (product.price * ((100 - pDiscount) / 100))
+        .toStringAsPrecision(3);
 
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => ProductDetailScreen(productId: "1")),
-      ),
+      onTap: onTap,
       child: Container(
         width: 180,
         height: 48.h,
@@ -25,7 +36,7 @@ class ProductCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withAlpha(005),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -36,9 +47,7 @@ class ProductCard extends StatelessWidget {
           children: [
             Stack(
               children: [
-                _buildImage(
-                  "https://picsum.photos/id/${20 + DateTime.now().millisecondsSinceEpoch % 50}/400/300",
-                ),
+                _buildImage(product.images.first),
 
                 _buildOffer(colorScheme, theme),
               ],
@@ -46,10 +55,10 @@ class ProductCard extends StatelessWidget {
             _buildInfo(
               theme,
               colorScheme,
-              title: 'A Long Product Name',
-              category: 'Category',
-              price: '59.99',
-              oldPrice: '99.99',
+              title: product.name,
+              category: product.category ?? ".",
+              price: newPrice,
+              oldPrice: '${product.price}',
             ),
           ],
         ),
@@ -86,25 +95,30 @@ class ProductCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                '\$$price',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontSize: 16,
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '\$$oldPrice',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  decoration: TextDecoration.lineThrough,
-                  color: colorScheme.onSurface.withOpacity(0.5),
-                ),
-              ),
-            ],
+          Consumer(
+            builder: (_, ref, _) {
+              final currency = ref.read(currencyProvider);
+              return Row(
+                children: [
+                  Text(
+                    '$currency$price',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontSize: 16,
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '$currency$oldPrice',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      decoration: TextDecoration.lineThrough,
+                      color: colorScheme.onSurface.withAlpha(50),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 8),
         ],

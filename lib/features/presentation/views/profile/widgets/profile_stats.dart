@@ -1,11 +1,10 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-// profile_stats.dart
-import 'package:clean_commerce/features/presentation/views/profile/wishlist_screen.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
+import 'package:clean_commerce/features/presentation/views/profile/recentorders_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class ProfileStats extends ConsumerWidget {
+class ProfileStats extends StatelessWidget {
   final int totalOrders;
   final double totalSpent;
   final int wishlistCount;
@@ -18,10 +17,7 @@ class ProfileStats extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
+  Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(8.w),
       child: Row(
@@ -31,32 +27,25 @@ class ProfileStats extends ConsumerWidget {
             value: totalOrders.toString(),
             label: "Orders",
             icon: Icons.shopping_bag_outlined,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => RecentOrdersScreen()),
+              );
+            },
           ),
-          _divider(colorScheme),
-          _StatItem(
-            value: "\$${totalSpent.toStringAsFixed(0)}",
-            label: "Spent",
-            icon: Icons.attach_money_outlined,
-          ),
-          _divider(colorScheme),
-          _StatItem(
-            value: wishlistCount.toString(),
-            label: "Wishlist",
-            icon: Icons.favorite_border,
-            onTap: () => Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => WishlistScreen())),
+          Consumer(
+            builder: (_, ref, _) {
+              String currency = ref.read(currencyProvider);
+              return _StatItem(
+                value: "$currency${totalSpent.toStringAsFixed(0)}",
+                label: "Spent",
+                icon: Icons.attach_money_outlined,
+              );
+            },
           ),
         ],
       ),
-    );
-  }
-
-  Container _divider(ColorScheme colorScheme) {
-    return Container(
-      width: 1,
-      height: 15.w,
-      color: colorScheme.outline.withAlpha(50),
     );
   }
 }
@@ -68,7 +57,6 @@ class _StatItem extends StatelessWidget {
   final VoidCallback? onTap;
 
   const _StatItem({
-    super.key,
     required this.value,
     required this.label,
     required this.icon,
@@ -90,6 +78,7 @@ class _StatItem extends StatelessWidget {
         ), // Add borderRadius to InkWell
         child: Container(
           padding: EdgeInsets.all(12),
+          width: 30.w,
           decoration: BoxDecoration(
             border: onTap == null
                 ? null

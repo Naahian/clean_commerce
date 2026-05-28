@@ -1,10 +1,16 @@
+import 'package:clean_commerce/core/injection.dart';
 import 'package:clean_commerce/core/services/localstorage_service.dart';
 import 'package:clean_commerce/features/data/models/auth_models.dart';
 import 'package:clean_commerce/features/data/repositories.dart';
 import 'package:clean_commerce/features/data/services/auth_service.dart';
-import 'package:clean_commerce/features/domain/entity/profile_entity.dart';
-import 'package:clean_commerce/features/domain/entity/result_entity.dart';
+import 'package:clean_commerce/features/domain/entities/profile_entity.dart';
+import 'package:clean_commerce/features/domain/entities/result_entity.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+final authRepositoryProvider = Provider<AuthRepository>(
+  (ref) => getIt<AuthRepository>(),
+);
 
 class AuthRepositoryImp implements AuthRepository {
   final AuthService remote;

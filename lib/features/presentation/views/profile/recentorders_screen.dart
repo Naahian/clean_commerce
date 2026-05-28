@@ -1,136 +1,109 @@
-import 'package:clean_commerce/core/constansts.dart';
-import 'package:clean_commerce/features/domain/entity/transaction_entity.dart';
+import 'package:clean_commerce/features/domain/entities/order_entity.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/transaction_controller.dart';
 import 'package:clean_commerce/features/presentation/views/profile/widgets/transaction_item.dart';
+import 'package:clean_commerce/features/presentation/widgets/shimmerbox.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class RecentOrdersScreen extends StatelessWidget {
-  RecentOrdersScreen({super.key});
+class RecentOrdersScreen extends ConsumerStatefulWidget {
+  const RecentOrdersScreen({super.key});
 
-  final List<TransactionEntity> transactions = [
-    TransactionEntity(
-      id: 'TRX-001',
-      userId: '1',
-      type: TransactionType.payment.name,
-      amount: 125.50,
-      status: TransactionStatus.completed,
-      date: DateTime(2024, 1, 15),
-    ),
-    TransactionEntity(
-      id: 'TRX-002',
-      userId: '1',
-      type: TransactionType.payment.name,
-      amount: 89.99,
-      status: TransactionStatus.completed,
-      date: DateTime(2024, 1, 10),
-    ),
-    TransactionEntity(
-      id: 'TRX-003',
-      userId: '1',
-      type: TransactionType.payment.name,
-      amount: 245.00,
-      status: TransactionStatus.pending,
-      date: DateTime(2024, 1, 5),
-    ),
-    TransactionEntity(
-      id: 'TRX-004',
-      userId: '1',
-      type: TransactionType.payment.name,
-      amount: 45.50,
-      status: TransactionStatus.rejected,
-      date: DateTime(2024, 1, 1),
-    ),
-  ];
+  @override
+  ConsumerState<RecentOrdersScreen> createState() => _RecentOrdersScreenState();
+}
+
+class _RecentOrdersScreenState extends ConsumerState<RecentOrdersScreen> {
+  @override
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => ref.read(orderProvider.notifier).fetchRecentOrders(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final state = ref.watch(orderProvider);
+    final order = state.orders;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Orders"), centerTitle: true),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 2.w),
-        child: Column(
-          children: [
-            // Filter by date section
-            _filterByDate(colorScheme, theme),
-
-            // Orders list
-            Expanded(
-              child: ListView.builder(
-                itemCount: transactions.length,
-                itemBuilder: (context, index) =>
-                    TransactionItem(transaction: transactions[index]),
-              ),
-            ),
-          ],
-        ),
+        child: state.isLoading
+            ? _buildShimmers()
+            : state.hasOrders
+            ? _buildOrderList(colorScheme, theme, order)
+            : _buildNoOrderCard(theme),
       ),
     );
   }
 
-  Container _filterByDate(ColorScheme colorScheme, ThemeData theme) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-      margin: EdgeInsets.all(2.w),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outline.withAlpha(10)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Center _buildNoOrderCard(ThemeData theme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.filter_alt_outlined,
-                size: 18.sp,
-                color: colorScheme.primary,
-              ),
-              SizedBox(width: 2.w),
-              Text(
-                'Filter by date',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+          Icon(
+            Icons.shopping_bag_outlined,
+            size: 30.sp,
+            color: theme.colorScheme.onSurface.withAlpha(150),
           ),
-          _buildDropdown(theme),
+          SizedBox(height: 2.h),
+          Text(
+            "No orders found",
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withAlpha(150),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Container _buildDropdown(ThemeData theme) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 3.w),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withAlpha(10),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.colorScheme.primary.withAlpha(30),
-          width: 0.5,
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton(
-          value: 2,
-          icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.primary),
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: theme.colorScheme.primary,
-            fontWeight: FontWeight.w500,
+  ListView _buildShimmers() {
+    return ListView.builder(
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(10, 25, 10, 0),
+          child: Shimmerbox(
+            width: double.maxFinite,
+            height: 8.h,
+            borderRadius: 12,
           ),
-          items: [
-            DropdownMenuItem(value: 1, child: Text("Last Week")),
-            DropdownMenuItem(value: 2, child: Text("Last Month")),
-            DropdownMenuItem(value: 3, child: Text("Last 3 Months")),
-          ],
-          onChanged: (value) {},
+        );
+      },
+    );
+  }
+
+  Column _buildOrderList(
+    ColorScheme colorScheme,
+    ThemeData theme,
+    List<OrderEntity> order,
+  ) {
+    return Column(
+      children: [
+        SizedBox(height: 2.h),
+        Text(
+          "Showing Recent (max 10) orders.",
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: theme.colorScheme.onSurface.withAlpha(150),
+          ),
         ),
-      ),
+        SizedBox(height: 4.h),
+        Expanded(
+          child: ListView.builder(
+            itemCount: order.length,
+            itemBuilder: (context, index) {
+              return TileInfoItem(order: order[index]);
+            },
+          ),
+        ),
+      ],
     );
   }
 }

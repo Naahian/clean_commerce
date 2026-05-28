@@ -1,28 +1,30 @@
-import 'package:clean_commerce/features/domain/entity/transaction_entity.dart';
+import 'package:clean_commerce/features/domain/entities/order_entity.dart';
+import 'package:clean_commerce/features/domain/entities/transaction_entity.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
 import 'package:clean_commerce/features/presentation/views/profile/ordertrack_screen.dart';
 import 'package:clean_commerce/features/presentation/widgets/status_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:sizer/sizer.dart';
 
-class TransactionItem extends StatelessWidget {
-  final TransactionEntity transaction;
-  final bool isTransaction;
+class TileInfoItem extends StatelessWidget {
+  final OrderEntity? order;
+  final TransactionEntity? transaction;
+  bool get isOrder => order != null;
 
-  const TransactionItem({
-    super.key,
-    required this.transaction,
-    this.isTransaction = false,
-  });
+  const TileInfoItem({super.key, this.order, this.transaction});
 
   Color _getColor(String status) {
     switch (status) {
-      case 'pending':
+      case 'pending' || 'processing' || 'shipped':
         return Colors.blue;
-      case 'completed':
+      case 'completed' || 'delivered':
         return Colors.green;
-      case 'rejected':
+      case 'rejected' || 'cancelled':
         return Colors.red;
+      case 'reqCancel':
+        return Colors.deepOrange;
       default:
         return Colors.grey;
     }
@@ -30,11 +32,11 @@ class TransactionItem extends StatelessWidget {
 
   IconData _getIcon(String status) {
     switch (status.toLowerCase()) {
-      case 'pending':
+      case 'pending' || 'processing' || 'shipped':
         return Icons.pending_outlined;
-      case 'completed':
+      case 'completed' || 'delivered':
         return Icons.check_circle_outline;
-      case 'rejected':
+      case 'rejected' || 'cancelled' || 'reqCancel':
         return Icons.cancel_outlined;
       default:
         return Icons.help_outline;
@@ -45,13 +47,33 @@ class TransactionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    if (transaction == null && order == null) {
+      throw ArgumentError("Either order or transaction must be provided");
+    }
+    var formattedDate = "";
+    var status;
+    var statusColor;
+    var statusIcon;
+    var id;
+    var amount;
 
-    final formattedDate = transaction.date == null
-        ? "Null"
-        : DateFormat('MMM dd, yyyy').format(transaction.date!);
-    final status = transaction.status;
-    final statusColor = _getColor(status.name);
-    final statusIcon = _getIcon(status.name);
+    if (order != null) {
+      print("Building TileInfoItem  for order: $order");
+      formattedDate = DateFormat.yMMMd().format(order!.createdAt!);
+      status = order!.status.name;
+      statusColor = _getColor(order!.status.name);
+      statusIcon = _getIcon(order!.status.name);
+      id = order!.id;
+      amount = order!.totalAmount;
+    } else if (transaction != null) {
+      print("Building TileInfoItem for transaction: ${transaction!.id}");
+      formattedDate = DateFormat.yMMMd().format(transaction!.date!);
+      status = transaction!.status.name;
+      statusColor = _getColor(transaction!.status.name);
+      statusIcon = _getIcon(transaction!.status.name);
+      id = transaction!.id;
+      amount = transaction!.amount;
+    }
 
     return ListTile(
       leading: StatusIcon(
@@ -61,7 +83,7 @@ class TransactionItem extends StatelessWidget {
         padding: 8,
       ),
       title: Text(
-        transaction.id,
+        id,
         overflow: TextOverflow.ellipsis,
         style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w600,
@@ -72,10 +94,10 @@ class TransactionItem extends StatelessWidget {
         children: [
           Text(formattedDate, style: theme.textTheme.bodySmall),
           SizedBox(height: 0.5.h),
-          StatusChip(label: status.name, color: statusColor, compact: true),
+          StatusChip(label: status, color: statusColor, compact: true),
         ],
       ),
-      trailing: _buildTrailing(context, theme, colorScheme),
+      trailing: _buildTrailing(context, theme, colorScheme, amount),
     );
   }
 
@@ -83,42 +105,49 @@ class TransactionItem extends StatelessWidget {
     BuildContext context,
     ThemeData theme,
     ColorScheme colorScheme,
+    double amount,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          '\$${transaction.amount.toStringAsFixed(2)}',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onSurface,
-          ),
+        Consumer(
+          builder: (_, ref, _) {
+            String currency = ref.read(currencyProvider);
+
+            return Text(
+              '$currency${amount.toStringAsFixed(2)}',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            );
+          },
         ),
         SizedBox(height: 0.5.h),
-        TextButton(
-          onPressed: isTransaction
-              ? null
-              : () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        OrderTrackingScreen(orderId: transaction.id),
-                  ),
-                ),
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: Text(
-            isTransaction ? 'See Detail' : 'Track Order',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.primary,
-              fontWeight: FontWeight.w600,
-              decoration: TextDecoration.underline,
+        if (transaction == null)
+          TextButton(
+            onPressed: isOrder
+                ? () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => OrderTrackingScreen(order: order!),
+                    ),
+                  )
+                : null,
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              'Track Order',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
-        ),
       ],
     );
   }

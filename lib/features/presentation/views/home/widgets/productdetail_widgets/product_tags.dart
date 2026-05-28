@@ -5,7 +5,7 @@ class ProductTagsSection extends StatelessWidget {
   final ThemeData theme;
   final ColorScheme colorScheme;
 
-  const ProductTagsSection({required this.theme, required this.colorScheme});
+  const ProductTagsSection({super.key, required this.theme, required this.colorScheme});
 
   @override
   Widget build(BuildContext context) {

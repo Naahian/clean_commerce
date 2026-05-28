@@ -1,4 +1,4 @@
-import 'package:clean_commerce/features/domain/entity/transaction_entity.dart';
+import 'package:clean_commerce/features/domain/entities/transaction_entity.dart';
 
 class CreateTransactionModel {
   final String userId;

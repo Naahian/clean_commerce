@@ -1,8 +1,14 @@
+import 'package:clean_commerce/core/injection.dart';
 import 'package:clean_commerce/features/data/models/comment_model.dart';
 import 'package:clean_commerce/features/data/repositories.dart';
 import 'package:clean_commerce/features/data/services/comment_service.dart';
-import 'package:clean_commerce/features/domain/entity/comment_entity.dart';
-import 'package:clean_commerce/features/domain/entity/result_entity.dart';
+import 'package:clean_commerce/features/domain/entities/comment_entity.dart';
+import 'package:clean_commerce/features/domain/entities/result_entity.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final commentRepositoryProvider = Provider<AuthRepository>(
+  (ref) => getIt<AuthRepository>(),
+);
 
 class CommentRepositoryImp implements CommentRepository {
   final CommentService remote;

@@ -1,3 +1,4 @@
+import 'package:clean_commerce/features/presentation/widgets/logo.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -6,19 +7,33 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        color: theme.colorScheme.surface,
+
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          gradient: LinearGradient(
+            begin: AlignmentGeometry.topLeft,
+            end: AlignmentGeometry.bottomRight,
+            colors: [
+              colorScheme.primary.withAlpha(80),
+              Colors.transparent,
+              colorScheme.tertiary.withAlpha(80),
+            ],
+          ),
+        ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.shopping_bag, size: 80, color: theme.primaryColor),
+              Logo(),
               SizedBox(height: 30),
               SizedBox(width: 100, child: LinearProgressIndicator()),
-              // SizedBox(height: 30),
+              SizedBox(height: 30),
               // ElevatedButton(
               //   onPressed: () => ManualTest().start(),
               //   child: Text("Test"),

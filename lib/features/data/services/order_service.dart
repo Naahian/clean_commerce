@@ -8,10 +8,14 @@ class OrderService {
 
   Future<List<OrderModel>> getAll() async {
     try {
-      final res = await _client.from('orders').select();
+      final user = _client.auth.currentUser;
+      if (user == null) throw Exception("User not authenticated");
+
+      final res = await _client.from('orders').select().eq('user_id', user.id);
+
       return (res as List).map((e) => OrderModel.fromJson(e)).toList();
     } catch (e) {
-      throw Exception("Error fetching orders ");
+      throw Exception("Error fetching orders: $e");
     }
   }
 
@@ -24,7 +28,9 @@ class OrderService {
           .single();
 
       return OrderModel.fromJson(res);
-    } catch (e) {
+    } catch (e, stack) {
+      print(e);
+      print(stack);
       throw Exception("Error creating order ");
     }
   }

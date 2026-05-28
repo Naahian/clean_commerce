@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:clean_commerce/core/injection.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class LocalDbKeys {
@@ -21,6 +25,14 @@ class LocalDbKeys {
 
   static List<String> allBoxes = [userBox, productBox, cartBox, settingsBox];
 }
+
+// PROVIDER
+
+final localStorageProvider = Provider<LocalStorageService>(
+  (_) => getIt<LocalStorageService>(),
+);
+
+// SERVICE
 
 class LocalStorageService {
   Box get _userBox => Hive.box(LocalDbKeys.userBox);
@@ -92,7 +104,7 @@ class LocalStorageService {
 
   Future<void> saveCart(List<Map<String, dynamic>> cart) async {
     try {
-      await _cartBox.put(LocalDbKeys.cachedCart, cart);
+      await _cartBox.put(LocalDbKeys.cachedCart, json.encode(cart));
     } on HiveError catch (e) {
       throw Exception('Hive error: $e');
     }
@@ -100,11 +112,13 @@ class LocalStorageService {
 
   List<Map<String, dynamic>>? getCart() {
     try {
-      final data = _cartBox.get(LocalDbKeys.cachedCart);
-      if (data == null) return null;
-      return List<Map<String, dynamic>>.from(data);
-    } catch (e) {
-      throw Exception('LocalStorage Error: ');
+      final jsonString = _cartBox.get(LocalDbKeys.cachedCart);
+      if (jsonString == null) return null;
+
+      final List<dynamic> decoded = json.decode(jsonString);
+      return decoded.map((item) => Map<String, dynamic>.from(item)).toList();
+    } catch (e, stack) {
+      return null;
     }
   }
 

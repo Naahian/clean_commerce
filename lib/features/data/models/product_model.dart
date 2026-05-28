@@ -5,8 +5,10 @@ class ProductModel {
   final String? description;
   final double price;
   final int quantity;
+  final int? discount;
   final String? category;
   final List<String>? images;
+
   final Map<String, dynamic>? metadata;
   final bool isActive;
   final DateTime? createdAt;
@@ -25,7 +27,25 @@ class ProductModel {
     this.isActive = true,
     this.createdAt,
     this.updatedAt,
+    required this.discount,
   });
+
+  int? parseToInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    if (value is double) return value.toInt();
+    return null;
+  }
+
+  // Helper function to safely convert to double
+  double parseToDouble(dynamic value) {
+    if (value == null) return 0.0;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
+  }
 
   /// JSON → Model
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -36,6 +56,7 @@ class ProductModel {
       description: json['description'],
       price: (json['price'] ?? 0).toDouble(),
       quantity: json['quantity'] ?? 0,
+      discount: json['discount'] ?? 0,
       category: json['category'],
       images: (json['images'] != null)
           ? List<String>.from(json['images'])
@@ -63,6 +84,7 @@ class ProductModel {
       'category': category,
       'images': images,
       'metadata': metadata,
+      'discount': discount,
       'is_active': isActive,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
@@ -77,6 +99,7 @@ class ProductModel {
     String? description,
     double? price,
     int? quantity,
+    int? discount,
     String? category,
     List<String>? images,
     Map<String, dynamic>? metadata,
@@ -97,6 +120,7 @@ class ProductModel {
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      discount: this.discount,
     );
   }
 
@@ -110,6 +134,7 @@ ProductModel(
   description: $description,
   price: $price,
   quantity: $quantity,
+  discount: $discount,
   category: $category,
   images: $images,
   metadata: $metadata,

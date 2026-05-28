@@ -101,7 +101,7 @@ class OrderTrackline extends StatelessWidget {
         return Icons.home;
       case OrderStatus.reqCancel:
         return Icons.cancel_schedule_send_outlined;
-      case OrderStatus.canceled:
+      case OrderStatus.cancelled:
         return Icons.cancel_outlined;
     }
   }
@@ -118,7 +118,7 @@ class OrderTrackline extends StatelessWidget {
         return 'Delivered';
       case OrderStatus.reqCancel:
         return 'reqCancel';
-      case OrderStatus.canceled:
+      case OrderStatus.cancelled:
         return 'canceled';
     }
   }

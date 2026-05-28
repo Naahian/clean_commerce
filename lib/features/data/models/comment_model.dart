@@ -1,4 +1,4 @@
-import 'package:clean_commerce/features/domain/entity/comment_entity.dart';
+import 'package:clean_commerce/features/domain/entities/comment_entity.dart';
 
 class CreateCommentModel {
   final String authorId;

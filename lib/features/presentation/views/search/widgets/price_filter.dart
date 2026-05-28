@@ -1,44 +1,43 @@
-import 'package:flutter/material.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/search_controller.dart';
+import 'package:flutter/material.dart' hide SearchController;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class PriceFilter extends StatefulWidget {
+class PriceFilter extends ConsumerWidget {
   const PriceFilter({super.key});
 
-  @override
-  State<PriceFilter> createState() => _PriceFilterState();
-}
-
-class _PriceFilterState extends State<PriceFilter> {
-  final List<String> _filters = const [
-    'Price: Lowest First',
-    'Price: Highest First',
-    'On Sale',
-  ];
-  String _selectedFilter = '';
+  void checkAnyFilterChange(SearchController ctrl) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => ctrl.onAnyFilterChange(),
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final ctrl = ref.read(searchControllerProvider.notifier);
+    final state = ref.watch(searchControllerProvider);
+    final filters = PriceFilters.values;
+    final filter = state.priceFilter;
+    // checkAnyFilterChange(ctrl);
 
     return Padding(
       padding: EdgeInsets.only(left: 4.w, bottom: 1.h),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: List.generate(_filters.length, (index) {
-            final filter = _filters[index];
-            final isSelected = _selectedFilter == filter;
+          children: List.generate(filters.length, (index) {
+            final filterName = filters[index].name;
+            final isSelected = filter.name == filterName;
 
             return Padding(
               padding: EdgeInsets.only(right: 2.w),
               child: FilterChip(
-                label: Text(filter, style: TextStyle(fontSize: 14.sp)),
+                label: Text(filterName, style: TextStyle(fontSize: 14.sp)),
                 selected: isSelected,
                 onSelected: (selected) {
-                  setState(() {
-                    _selectedFilter = selected ? filter : '';
-                  });
+                  ctrl.filterByPrice(filters[index]);
                 },
                 backgroundColor: colorScheme.secondary.withAlpha(30),
                 selectedColor: colorScheme.primary.withAlpha(80),

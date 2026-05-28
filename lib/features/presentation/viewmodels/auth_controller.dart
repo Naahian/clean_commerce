@@ -1,12 +1,12 @@
-import 'package:clean_commerce/core/injection.dart';
 import 'package:clean_commerce/features/data/repositories.dart';
-import 'package:clean_commerce/features/domain/entity/profile_entity.dart';
+import 'package:clean_commerce/features/domain/entities/profile_entity.dart';
+import 'package:clean_commerce/features/domain/repositories/auth_repo_imp.dart';
 import 'package:clean_commerce/features/presentation/snackbar_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// STATE
-
+// STATE
+// ----------------------------------------------------
 class AuthState {
   final bool isLoading;
   final User? user;
@@ -28,40 +28,34 @@ class AuthState {
       profile?.fullName ?? user?.userMetadata?['display_name'] ?? "Shopper";
 }
 
-/// PROVIDERS
+// PROVIDERS
+// ----------------------------------------------------
 
-final authRepositoryProvider = Provider<AuthRepository>(
-  (ref) => getIt<AuthRepository>(),
-);
-
-final snackbarProvider = Provider<SnackbarService>(
-  (ref) => getIt<SnackbarService>(),
-);
-
-final sessionProvider = StreamProvider(
-  (ref) =>
-      Supabase.instance.client.auth.onAuthStateChange.map((e) => e.session),
-);
+// TODO: might need it
+// final sessionProvider = StreamProvider(
+//   (ref) =>
+//       Supabase.instance.client.auth.onAuthStateChange.map((e) => e.session),
+// );
 
 final authControllerProvider = NotifierProvider<AuthController, AuthState>(
   AuthController.new,
 );
 
-/// CONTROLLER
-
+// CONTROLLER
+// ----------------------------------------------------
 class AuthController extends Notifier<AuthState> {
   late final AuthRepository _repo;
   late final SnackbarService _snackbar;
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  /// LIFECYCLE
-
+  // LIFECYCLE
+  // ----------------------------------------------------
   @override
   AuthState build() {
     _repo = ref.read(authRepositoryProvider);
     _snackbar = ref.read(snackbarProvider);
 
-    _listenToAuthChanges();
+    // _listenToAuthChanges();
 
     return AuthState(
       user: _supabase.auth.currentUser,
@@ -69,14 +63,14 @@ class AuthController extends Notifier<AuthState> {
     );
   }
 
-  void _listenToAuthChanges() {
-    ref.listen(sessionProvider, (prev, next) {
-      final session = next.value;
-      if (session?.user == null) {
-        state = const AuthState();
-      }
-    });
-  }
+  // void _listenToAuthChanges() {
+  //   ref.listen(sessionProvider, (prev, next) {
+  //     final session = next.value;
+  //     if (session?.user == null) {
+  //       state = const AuthState();
+  //     }
+  //   });
+  // }
 
   ProfileEntity? _initUserInfo() {
     _repo.getUserInfo().then((result) {
@@ -87,8 +81,8 @@ class AuthController extends Notifier<AuthState> {
     return null;
   }
 
-  /// PROFILE
-
+  // PROFILE
+  // ----------------------------------------------------
   Future<void> getProfile() async {
     state = state.copyWith(isLoading: true, user: _supabase.auth.currentUser);
 
@@ -107,8 +101,8 @@ class AuthController extends Notifier<AuthState> {
     }
   }
 
-  /// AUTHENTICATION
-
+  // AUTHENTICATION
+  // ----------------------------------------------------
   Future<void> login(String email, String password) async {
     state = state.copyWith(isLoading: true);
     final result = await _repo.login(email, password);
@@ -177,8 +171,8 @@ class AuthController extends Notifier<AuthState> {
     }
   }
 
-  /// PROFILE UPDATES
-
+  // PROFILE UPDATES
+  // ----------------------------------------------------
   Future<void> updateAddress(String address) async {
     await _updateProfile(phone: null, address: address);
   }
@@ -200,8 +194,8 @@ class AuthController extends Notifier<AuthState> {
     }
   }
 
-  /// VALIDATORS
-
+  // VALIDATORS
+  // ----------------------------------------------------
   String? emailValidator(String? value) {
     if (value == null || value.trim().isEmpty) {
       return "Email is required";

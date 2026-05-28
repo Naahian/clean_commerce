@@ -1,23 +1,27 @@
+import 'package:clean_commerce/features/presentation/viewmodels/cart_controller.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/models/cart_item.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
 import 'package:clean_commerce/features/presentation/views/home/widgets/productdetail_widgets/quantity_counter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class CartItem extends StatelessWidget {
-  final Map<String, dynamic> item;
-  final Function(int) onQuantityChanged;
-  final VoidCallback onRemove;
+class CartItemWidget extends ConsumerWidget {
+  final CartItem item;
 
-  const CartItem({
-    super.key,
-    required this.item,
-    required this.onQuantityChanged,
-    required this.onRemove,
-  });
+  const CartItemWidget({super.key, required this.item});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ctrl = ref.read(cartProvider.notifier);
+    final productId = item.product.id;
+
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    final image = item.product.images.first;
+    final name = item.product.name;
+    final price = item.product.price;
 
     return Container(
       margin: EdgeInsets.only(bottom: 2.h),
@@ -33,7 +37,7 @@ class CartItem extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12.sp),
             child: Image.network(
-              item['image'],
+              image,
               width: 20.w,
               height: 20.w,
               fit: BoxFit.cover,
@@ -54,7 +58,7 @@ class CartItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item['name'],
+                  name,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -62,25 +66,31 @@ class CartItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 0.5.h),
-                Text(
-                  '\$${item['price'].toStringAsFixed(2)}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.primary,
-                  ),
+                Consumer(
+                  builder: (_, ref, _) {
+                    final currency = ref.read(currencyProvider);
+                    return Text(
+                      '$currency${price.toStringAsFixed(2)}',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.primary,
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(height: 1.h),
+
                 QuantityCounter(
-                  quantity: 1,
-                  colorScheme: colorScheme,
-                  onQuantityChanged: onQuantityChanged,
+                  quantity: item.quantity,
+                  onQuantityChanged: (qty) =>
+                      ctrl.updateQuantity(productId, qty),
                 ),
               ],
             ),
           ),
           // Remove button
           IconButton(
-            onPressed: onRemove,
+            onPressed: () => ctrl.removeFromCart(item.product.id),
             icon: Icon(
               Icons.delete_outline,
               size: 18,
@@ -88,21 +98,6 @@ class CartItem extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildQuantityButton(IconData icon, VoidCallback onPressed) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.grey.shade300, width: 0.5),
-      ),
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 14),
-        padding: EdgeInsets.all(2.w),
-        constraints: const BoxConstraints(),
       ),
     );
   }

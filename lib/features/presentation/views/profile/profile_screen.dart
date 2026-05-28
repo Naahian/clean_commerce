@@ -1,10 +1,12 @@
 // profile_screen.dart
+import 'package:clean_commerce/core/constansts.dart';
+import 'package:clean_commerce/features/domain/entities/transaction_entity.dart';
 import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
-import 'package:clean_commerce/features/presentation/views/profile/widgets/personal_info.dart';
 import 'package:clean_commerce/features/presentation/widgets/appdarawer.dart';
 import 'package:clean_commerce/features/presentation/widgets/bottomnavbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sizer/sizer.dart';
 
 import 'widgets/widgets.dart';
 
@@ -47,10 +49,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          // App Bar
           ProfileTopBar(isScrolled: _isScrolled),
-
-          // Stats Section
           SliverToBoxAdapter(
             child: const ProfileStats(
               totalOrders: 24,
@@ -58,23 +57,37 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               wishlistCount: 8,
             ),
           ),
-
-          // Info Section Title
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-              child: Text(
-                "Personal Information",
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-
+          _buildTitle(theme, "Personal Info"),
           PersonalInfo(),
-          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          _buildTitle(theme, "Most Recent Transaction"),
+          _buildTransaction(),
+          const SliverPadding(padding: EdgeInsetsGeometry.all(20)),
         ],
+      ),
+    );
+  }
+
+  SliverToBoxAdapter _buildTransaction() {
+    TransactionEntity transaction = TransactionEntity(
+      id: "TRX-D3M0T8AZSACT10Z",
+      userId: "-1",
+      type: TransactionType.payment.name,
+      amount: 99.99,
+      date: DateTime.now(),
+    );
+    return SliverToBoxAdapter(child: TileInfoItem(transaction: transaction));
+  }
+
+  SliverToBoxAdapter _buildTitle(ThemeData theme, String title) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+        child: Text(
+          title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }

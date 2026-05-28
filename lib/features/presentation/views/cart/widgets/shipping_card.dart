@@ -1,4 +1,4 @@
-import 'package:clean_commerce/features/presentation/views/cart/checkout_screen.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/models/shipping_info.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 

@@ -1,9 +1,14 @@
+import 'package:clean_commerce/core/injection.dart';
 import 'package:clean_commerce/features/data/models/transaction_model.dart';
 import 'package:clean_commerce/features/data/repositories.dart';
 import 'package:clean_commerce/features/data/services/transaction_service.dart';
-import 'package:clean_commerce/features/domain/entity/result_entity.dart';
-import 'package:clean_commerce/features/domain/entity/transaction_entity.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:clean_commerce/features/domain/entities/result_entity.dart';
+import 'package:clean_commerce/features/domain/entities/transaction_entity.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final transactionRepositoryProvider = Provider<AuthRepository>(
+  (ref) => getIt<AuthRepository>(),
+);
 
 class TransactionRepositoryImp implements TransactionRepository {
   final TransactionService remote;

@@ -56,7 +56,7 @@ class _EditDialogState extends State<EditDialog> {
         key: _formKey,
         child: widget.isSelectable
             ? DropdownButtonFormField<String>(
-                value: _selectedValue,
+                initialValue: _selectedValue,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -143,7 +143,6 @@ void _showSelectableEditDialog(
       isSelectable: true,
       options: options,
       validator: (val) {
-        if (val == null) return "*required";
         return null;
       },
     ),
@@ -166,7 +165,7 @@ void _showEditDialog(
       onSave: onSave,
       inputType: inputType,
       validator: (value) {
-        if (value == null || value.isEmpty) {
+        if (value.isEmpty) {
           return 'This field cannot be empty';
         }
         if (title == 'Phone Number' && value.length < 10) {

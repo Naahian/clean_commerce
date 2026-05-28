@@ -1,6 +1,5 @@
 import 'package:clean_commerce/features/data/models/auth_models.dart';
 import 'package:clean_commerce/features/data/models/profile_model.dart';
-import 'package:flutter/rendering.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
@@ -144,7 +143,7 @@ class AuthService {
       return ProfileModel.fromJson(response);
     } on PostgrestException catch (e) {
       throw Exception(" ${e.message}");
-    } catch (e, stack) {
+    } catch (e) {
       throw Exception("Unknow Error while getting User.");
     }
   }

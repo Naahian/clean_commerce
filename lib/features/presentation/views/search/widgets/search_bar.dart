@@ -1,20 +1,30 @@
-import 'package:flutter/material.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/search_controller.dart';
+import 'package:flutter/material.dart' hide SearchController;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-class Searchbar extends StatefulWidget {
+class Searchbar extends ConsumerStatefulWidget {
   const Searchbar({super.key});
 
   @override
-  State<Searchbar> createState() => _SearchbarState();
+  ConsumerState<Searchbar> createState() => _SearchbarState();
 }
 
-class _SearchbarState extends State<Searchbar> {
+class _SearchbarState extends ConsumerState<Searchbar> {
   final TextEditingController _searchController = TextEditingController();
+
+  void checkAnyFilterChange(SearchController ctrl) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => ctrl.onAnyFilterChange(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final ctrl = ref.read(searchControllerProvider.notifier);
+    // checkAnyFilterChange(ctrl);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
@@ -45,7 +55,7 @@ class _SearchbarState extends State<Searchbar> {
                 ? IconButton(
                     onPressed: () {
                       _searchController.clear();
-                      setState(() {});
+                      ctrl.clearFilters();
                     },
                     icon: Icon(Icons.clear, size: 16),
                   )
@@ -56,7 +66,8 @@ class _SearchbarState extends State<Searchbar> {
               horizontal: 2.w,
             ),
           ),
-          onChanged: (value) => setState(() {}),
+
+          onChanged: (value) => ctrl.filterBySearch(value),
         ),
       ),
     );

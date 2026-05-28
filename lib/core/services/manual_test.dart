@@ -9,6 +9,7 @@ import 'package:clean_commerce/features/data/services/comment_service.dart';
 import 'package:clean_commerce/features/data/services/order_service.dart';
 import 'package:clean_commerce/features/data/services/product_service.dart';
 import 'package:clean_commerce/features/data/services/transaction_service.dart';
+import 'package:clean_commerce/features/domain/entities/order_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -31,6 +32,10 @@ class ManualTest {
     debugPrint("### Auth Test ###");
     // await signup();
     // await login();
+    if (_client.auth.currentUser == null) {
+      debugPrint("# Not Authenticated #");
+      return;
+    }
     // await deleteAccountTest();
 
     debugPrint("### Product Test ###");
@@ -40,7 +45,7 @@ class ManualTest {
     debugPrint("### Order Test ###");
     // await createOrder(_client.auth.currentUser!.id, 999);
     // await getOrder();
-    // await cancelOrderReq("031276f0-694f-4168-8fea-82fde031dd16");
+    await cancelOrderReq("cdf1b3d3-558f-4003-885c-5ef828618115");
 
     debugPrint("### Transaction Test ###");
     // await createTransaction(_client.auth.currentUser!.id, 888);
@@ -71,7 +76,7 @@ class ManualTest {
   Future<void> login() async {
     debugPrint("# Login User");
     final loginUser = await authService.login(
-      LoginModel(email: "testuser@gmail.com", password: "tree1234"),
+      LoginModel(email: "harry@mail.com", password: "tree123"),
     );
     debugPrint(loginUser.toString());
     Future.delayed(Duration(microseconds: 500));
@@ -99,14 +104,35 @@ class ManualTest {
 
   Future<void> createOrder(String userId, double amount) async {
     debugPrint("# Create An Order");
+
     final result = await orderService.create(
       CreateOrderModel(
         userId: userId,
         totalAmount: amount,
         shippingAddress: '123/myhome/street/dhaka',
+        items: [
+          {
+            "idx": 1,
+            "id": "f5b942d3-a0ec-4643-958a-36295ef87dbe",
+            "owner_id": userId,
+            "name": "Running Shoe",
+            "description": "Comfortable athletic shoes",
+            "price": "39.99",
+            "quantity": 180,
+            "category": "fashion",
+            "images": ["product_shoe.jpg", "product_glass.jpg"],
+            "metadata":
+                "{\"tags\": [\"trending\", \"shoe\", \"sports\"], \"type\": \"footwear\"}",
+            "is_active": true,
+            "created_at": "2026-05-09 09:11:25.250459",
+            "updated_at": "2026-05-09 09:11:25.250459",
+            "discount": 0,
+          },
+        ],
       ),
     );
-    debugPrint(result.toString());
+    final entity = OrderEntity.fromOrderModel(result);
+    print(entity.toString());
     Future.delayed(Duration(microseconds: 500));
   }
 

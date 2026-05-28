@@ -2,6 +2,7 @@ import 'package:clean_commerce/features/presentation/viewmodels/settings_notifie
 import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
 import 'package:clean_commerce/features/presentation/views/auth/auth_wrapper.dart';
 import 'package:clean_commerce/features/presentation/views/home/home_screen.dart';
+import 'package:clean_commerce/features/presentation/views/home/widgets/about_screen.dart';
 import 'package:clean_commerce/features/presentation/views/profile/recentorders_screen.dart';
 import 'package:clean_commerce/features/presentation/widgets/edit_dialog.dart';
 import 'package:clean_commerce/features/presentation/widgets/logo.dart';
@@ -82,7 +83,9 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                     theme: theme,
                     icon: Icons.info_outline,
                     title: 'About',
-                    onTap: () {},
+                    onTap: () => Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(builder: (_) => AboutScreen())),
                   ),
                   const Divider(height: 32, thickness: 1),
                   _buildDrawerItem(

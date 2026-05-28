@@ -1,10 +1,15 @@
 import 'package:clean_commerce/core/constansts.dart';
+import 'package:clean_commerce/core/injection.dart';
 import 'package:clean_commerce/features/data/models/order_model.dart';
 import 'package:clean_commerce/features/data/repositories.dart';
 import 'package:clean_commerce/features/data/services/order_service.dart';
-import 'package:clean_commerce/features/domain/entity/order_entity.dart';
-import 'package:clean_commerce/features/domain/entity/result_entity.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:clean_commerce/features/domain/entities/order_entity.dart';
+import 'package:clean_commerce/features/domain/entities/result_entity.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final orderRepositoryProvider = Provider<AuthRepository>(
+  (ref) => getIt<AuthRepository>(),
+);
 
 class OrderRepositoryImp implements OrderRepository {
   final OrderService remote;

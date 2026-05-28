@@ -1,9 +1,6 @@
 // profile_header.dart
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'dart:ui';
 
-import 'package:sizer/sizer.dart';
 
 class ProfileHeader extends StatelessWidget {
   final bool isScrolled;

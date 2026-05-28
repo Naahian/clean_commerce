@@ -1,3 +1,4 @@
+import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
 import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
 import 'package:clean_commerce/features/presentation/views/cart/checkout_screen.dart';
 import 'package:flutter/material.dart';
@@ -60,9 +61,11 @@ class CartSummeryCard extends ConsumerWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => CheckoutScreen())),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => CheckoutScreen(subtotal: subtotal),
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
                 foregroundColor: Colors.white,

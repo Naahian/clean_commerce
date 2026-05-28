@@ -35,6 +35,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               textController: _emailCtrl,
               validator: (val) {
                 if (val == null) return "*required";
+                return null;
               },
               label: "Email",
               hint: "yourmail@mail.com",

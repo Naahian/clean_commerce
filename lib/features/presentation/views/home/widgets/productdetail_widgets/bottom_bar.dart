@@ -1,95 +1,74 @@
+import 'package:clean_commerce/features/domain/entities/product_entity.dart';
+import 'package:clean_commerce/features/presentation/viewmodels/cart_controller.dart';
+import 'package:clean_commerce/features/presentation/views/home/widgets/productdetail_widgets/productdetail_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sizer/sizer.dart';
 
-import 'quantity_counter.dart';
+class ProductBottomBar extends ConsumerStatefulWidget {
+  final ProductEntity product;
 
-class ProductBottomBar extends StatelessWidget {
-  final ThemeData theme;
-  final ColorScheme colorScheme;
-  final int quantity;
-  final Function(int) onQuantityChanged;
+  const ProductBottomBar({super.key, required this.product});
 
-  const ProductBottomBar({
-    required this.theme,
-    required this.colorScheme,
-    required this.quantity,
-    required this.onQuantityChanged,
-  });
+  @override
+  ConsumerState<ProductBottomBar> createState() => _ProductBottomBarState();
+}
+
+class _ProductBottomBarState extends ConsumerState<ProductBottomBar> {
+  int _quantity = 1;
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final cartCtrl = ref.read(cartProvider.notifier);
+
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, -4),
+            color: colorScheme.onSurface.withAlpha(15),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          // Quantity Selector in Bottom Bar
-          QuantityCounter(
-            quantity: quantity,
-            colorScheme: colorScheme,
-            onQuantityChanged: onQuantityChanged,
-          ),
-          SizedBox(width: 8),
-          // Add to Cart Button
-          Expanded(
-            flex: 2,
-            child: _AddToCartButton(
-              theme: theme,
-              colorScheme: colorScheme,
-              onPressed: () {},
+      child: SafeArea(
+        child: Row(
+          children: [
+            QuantityCounter(
+              onQuantityChanged: (quantity) {
+                setState(() {
+                  _quantity = quantity;
+                });
+              },
+              quantity: _quantity,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ============================================================================
-// Add to Cart Button Component
-// ============================================================================
-
-class _AddToCartButton extends StatelessWidget {
-  final ThemeData theme;
-  final ColorScheme colorScheme;
-  final VoidCallback onPressed;
-
-  const _AddToCartButton({
-    required this.theme,
-    required this.colorScheme,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: colorScheme.primary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        child: Text(
-          'Add to Cart',
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.3,
-          ),
+            SizedBox(width: 4.w),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: () =>
+                    cartCtrl.addToCart(widget.product, quantity: _quantity),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  padding: EdgeInsets.symmetric(vertical: 1.5.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text(
+                  'Add to Cart',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
