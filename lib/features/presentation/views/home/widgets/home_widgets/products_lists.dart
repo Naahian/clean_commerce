@@ -106,18 +106,6 @@ class AllProducts extends ConsumerWidget {
     );
   }
 
-  SliverPadding _buildNotFound() {
-    return SliverPadding(
-      padding: EdgeInsetsGeometry.symmetric(vertical: 10.h),
-      sliver: SliverList(
-        delegate: SliverChildListDelegate([
-          Center(child: Icon(Icons.inventory_2, size: 40, color: Colors.grey)),
-          Center(child: Text("No Products Found", style: TextStyle(height: 2))),
-        ]),
-      ),
-    );
-  }
-
   SliverList _buildShimmers() {
     return SliverList(
       delegate: SliverChildBuilderDelegate(childCount: 4, (context, index) {

@@ -29,7 +29,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     ];
   }
 
-  void _onGooglePayResult(paymentResult) {
+  void _onGooglePayResult(Map<String, dynamic> paymentResult) {
     try {
       // Extract payment token
       final token =

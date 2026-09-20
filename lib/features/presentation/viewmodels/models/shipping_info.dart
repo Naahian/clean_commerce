@@ -25,7 +25,7 @@ class ShippingInfo {
     );
   }
 
-  toJson() {
+  Map<String, dynamic> toJson() {
     return {'name': name, 'phone': phone, 'address': address};
   }
 }

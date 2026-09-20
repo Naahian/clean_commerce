@@ -25,7 +25,7 @@ class _ProductImageSectionState extends State<ProductImageSection> {
               height: 45.h,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: widget.colorScheme.primary.withOpacity(0.08),
+                color: widget.colorScheme.primary.withValues(alpha: 0.08),
                 borderRadius: const BorderRadius.vertical(
                   bottom: Radius.circular(24),
                 ),
@@ -38,7 +38,7 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                     child: Icon(
                       Icons.image_not_supported_outlined,
                       size: 50,
-                      color: widget.colorScheme.primary.withOpacity(0.3),
+                      color: widget.colorScheme.primary.withValues(alpha: 0.3),
                     ),
                   );
                 },
@@ -54,7 +54,7 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
+color: Colors.black.withValues(alpha: 0.15),
                       blurRadius: 8,
                     ),
                   ],
@@ -94,7 +94,7 @@ class _ProductImageSectionState extends State<ProductImageSection> {
                     border: Border.all(
                       color: isSelected
                           ? widget.colorScheme.primary
-                          : Colors.grey.withOpacity(0.3),
+                          : Colors.grey.withValues(alpha: 0.3),
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -121,35 +121,6 @@ class _ProductImageSectionState extends State<ProductImageSection> {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _FavoriteButton extends StatelessWidget {
-  final bool isFavorite;
-  final VoidCallback onPressed;
-
-  const _FavoriteButton({required this.isFavorite, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 8),
-        ],
-      ),
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(
-          isFavorite ? Icons.favorite : Icons.favorite_border,
-          size: 20,
-          color: isFavorite ? Colors.red : Colors.black87,
-        ),
-        padding: const EdgeInsets.all(8),
-      ),
     );
   }
 }

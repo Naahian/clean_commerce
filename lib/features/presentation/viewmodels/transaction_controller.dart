@@ -56,15 +56,15 @@ class OrderState {
 
   // Filtered orders
   List<OrderEntity> get pendingOrders =>
-      orders.where((o) => o.status == OrderStatus.pending.name).toList();
+      orders.where((o) => o.status == OrderStatus.pending).toList();
   List<OrderEntity> get processingOrders =>
-      orders.where((o) => o.status == OrderStatus.processing.name).toList();
+      orders.where((o) => o.status == OrderStatus.processing).toList();
   List<OrderEntity> get shippedOrders =>
-      orders.where((o) => o.status == OrderStatus.shipped.name).toList();
+      orders.where((o) => o.status == OrderStatus.shipped).toList();
   List<OrderEntity> get deliveredOrders =>
-      orders.where((o) => o.status == OrderStatus.delivered.name).toList();
+      orders.where((o) => o.status == OrderStatus.delivered).toList();
   List<OrderEntity> get cancelledOrders =>
-      orders.where((o) => o.status == OrderStatus.cancelled.name).toList();
+      orders.where((o) => o.status == OrderStatus.cancelled).toList();
 
   // Stats
   int get totalOrders => orders.length;
@@ -133,17 +133,17 @@ class OrderController extends Notifier<OrderState> {
 
   Future<void> fetchRecentOrders() async {
     state = state.copyWith(isLoading: true);
-    print("Fetching recent orders...");
+    debugPrint("Fetching recent orders...");
 
     final result = await _orderRepository.getAll();
 
     if (result.success && result.data != null) {
       state = state.copyWith(orders: result.data!, isLoading: false);
-      print("Fetched ${result.data!.length} orders");
+      debugPrint("Fetched ${result.data!.length} orders");
     } else {
       state = state.copyWith(isLoading: false, errorMessage: result.message);
       _snackbar.showError(result.message ?? "Failed to load orders");
-      print("Failed to fetch orders: ${result.message}");
+      debugPrint("Failed to fetch orders: ${result.message}");
     }
   }
 
@@ -252,11 +252,11 @@ class OrderController extends Notifier<OrderState> {
   }
 
   List<OrderEntity> getOrdersByStatus(OrderStatus status) {
-    return state.orders.where((order) => order.status == status.name).toList();
+    return state.orders.where((order) => order.status == status).toList();
   }
 
   bool canCancelOrder(OrderEntity order) =>
-      order.status == OrderStatus.pending.name;
+      order.status == OrderStatus.pending;
 
   Color getOrderStatusColor(OrderStatus status) {
     return status.color;

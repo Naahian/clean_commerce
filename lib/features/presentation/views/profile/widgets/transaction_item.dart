@@ -51,14 +51,13 @@ class TileInfoItem extends StatelessWidget {
       throw ArgumentError("Either order or transaction must be provided");
     }
     var formattedDate = "";
-    var status;
-    var statusColor;
-    var statusIcon;
-    var id;
-    var amount;
+    String status = "";
+    Color statusColor = Colors.grey;
+    IconData statusIcon = Icons.help_outline;
+    String id = "";
+    double amount = 0;
 
     if (order != null) {
-      print("Building TileInfoItem  for order: $order");
       formattedDate = DateFormat.yMMMd().format(order!.createdAt!);
       status = order!.status.name;
       statusColor = _getColor(order!.status.name);
@@ -66,7 +65,6 @@ class TileInfoItem extends StatelessWidget {
       id = order!.id;
       amount = order!.totalAmount;
     } else if (transaction != null) {
-      print("Building TileInfoItem for transaction: ${transaction!.id}");
       formattedDate = DateFormat.yMMMd().format(transaction!.date!);
       status = transaction!.status.name;
       statusColor = _getColor(transaction!.status.name);

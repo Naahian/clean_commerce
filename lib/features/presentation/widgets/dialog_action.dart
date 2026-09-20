@@ -33,7 +33,7 @@ class DialogAction extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(3.w),
             decoration: BoxDecoration(
-              color: (iconColor ?? colorScheme.primary).withOpacity(0.1),
+              color: (iconColor ?? colorScheme.primary).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(

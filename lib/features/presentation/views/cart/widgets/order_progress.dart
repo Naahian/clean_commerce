@@ -12,7 +12,7 @@ class OrderProgress extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.all(20.sp),
-      decoration: BoxDecoration(color: colorScheme.primary.withOpacity(0.05)),
+      decoration: BoxDecoration(color: colorScheme.primary.withValues(alpha: 0.05)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

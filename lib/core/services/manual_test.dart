@@ -132,7 +132,7 @@ class ManualTest {
       ),
     );
     final entity = OrderEntity.fromOrderModel(result);
-    print(entity.toString());
+    debugPrint(entity.toString());
     Future.delayed(Duration(microseconds: 500));
   }
 

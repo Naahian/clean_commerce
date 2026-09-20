@@ -41,14 +41,14 @@ enum TransactionType { payment, coupon }
 enum TransactionStatus { pending, completed, rejected }
 
 enum PaymentMethod {
-  google_pay,
+  googlePay,
   cashOnDelivery;
 
   IconData get icon {
     switch (this) {
       case PaymentMethod.cashOnDelivery:
         return Icons.attach_money;
-      case PaymentMethod.google_pay:
+      case PaymentMethod.googlePay:
         return Icons.wallet;
     }
   }
@@ -57,7 +57,7 @@ enum PaymentMethod {
     switch (this) {
       case PaymentMethod.cashOnDelivery:
         return Colors.orange;
-      case PaymentMethod.google_pay:
+      case PaymentMethod.googlePay:
         return Colors.red;
     }
   }

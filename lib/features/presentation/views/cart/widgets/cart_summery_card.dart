@@ -1,4 +1,3 @@
-import 'package:clean_commerce/features/presentation/viewmodels/auth_controller.dart';
 import 'package:clean_commerce/features/presentation/viewmodels/settings_notifier.dart';
 import 'package:clean_commerce/features/presentation/views/cart/checkout_screen.dart';
 import 'package:flutter/material.dart';

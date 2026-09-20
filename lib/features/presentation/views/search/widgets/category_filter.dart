@@ -15,7 +15,6 @@ class CategoryFilter extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final categories = Categories.values;
     final ctrl = ref.read(searchControllerProvider.notifier);
     final state = ref.watch(searchControllerProvider);
@@ -47,7 +46,7 @@ class CategoryFilter extends ConsumerWidget {
               selectedColor: color,
               labelStyle: TextStyle(color: isSelected ? Colors.white : color),
               side: BorderSide(
-                color: isSelected ? Colors.transparent : color.withOpacity(0.5),
+                color: isSelected ? Colors.transparent : color.withValues(alpha: 0.5),
                 width: 1,
               ),
               padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),

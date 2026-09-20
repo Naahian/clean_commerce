@@ -25,7 +25,7 @@ class _QuantityCounterState extends State<QuantityCounter> {
       width: 35.w,
       decoration: BoxDecoration(
         border: Border.all(
-          color: colorScheme.outline.withOpacity(0.2),
+          color: colorScheme.outline.withValues(alpha: 0.2),
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(12),

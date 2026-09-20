@@ -28,9 +28,7 @@ class OrderService {
           .single();
 
       return OrderModel.fromJson(res);
-    } catch (e, stack) {
-      print(e);
-      print(stack);
+    } catch (e) {
       throw Exception("Error creating order ");
     }
   }

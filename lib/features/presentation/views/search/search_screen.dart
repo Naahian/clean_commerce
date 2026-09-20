@@ -132,25 +132,4 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Center _notFound(ColorScheme colorScheme, ThemeData theme) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.search_off_outlined,
-            size: 40,
-            color: colorScheme.onSurfaceVariant.withOpacity(0.5),
-          ),
-          SizedBox(height: 2.h),
-          Text(
-            'Search for products',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant.withOpacity(0.5),
-            ),
-          ),
-        ],
-      ),
-    );
   }
-}

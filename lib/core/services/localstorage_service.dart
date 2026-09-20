@@ -117,7 +117,7 @@ class LocalStorageService {
 
       final List<dynamic> decoded = json.decode(jsonString);
       return decoded.map((item) => Map<String, dynamic>.from(item)).toList();
-    } catch (e, stack) {
+    } catch (e) {
       return null;
     }
   }

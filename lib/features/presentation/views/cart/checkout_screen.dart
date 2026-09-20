@@ -24,7 +24,7 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 }
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
-  PaymentMethod selectedPaymentMethod = PaymentMethod.google_pay;
+  PaymentMethod selectedPaymentMethod = PaymentMethod.googlePay;
   bool paid = false;
   bool submitted = false;
   bool _isLoadingProfile = true;
@@ -68,8 +68,6 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -410,7 +408,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         border: Border.all(color: colorScheme.outline.withAlpha(20)),
       ),
       child: Consumer(
-        builder: (_, ref, __) {
+        builder: (_, ref, _) {
           String currency = ref.read(currencyProvider);
           return Column(
             children: [

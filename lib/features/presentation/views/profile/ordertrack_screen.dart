@@ -135,33 +135,4 @@ class OrderTrackingScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildItemRow(
-    ThemeData theme,
-    String name,
-    int quantity,
-    double price,
-  ) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 1.h),
-      child: Row(
-        children: [
-          Expanded(child: Text(name, style: theme.textTheme.bodyMedium)),
-          Text('x$quantity', style: theme.textTheme.bodySmall),
-          SizedBox(width: 12.w),
-          Consumer(
-            builder: (_, ref, _) {
-              String currency = ref.read(currencyProvider);
-              return Text(
-                '$currency${(price * quantity).toStringAsFixed(2)}',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
 }

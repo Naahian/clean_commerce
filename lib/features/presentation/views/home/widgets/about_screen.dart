@@ -193,10 +193,10 @@ class _TagChip extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [tag.color.withOpacity(0.1), tag.color.withOpacity(0.05)],
+          colors: [tag.color.withValues(alpha: 0.1), tag.color.withValues(alpha: 0.05)],
         ),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: tag.color.withOpacity(0.3), width: 1),
+        border: Border.all(color: tag.color.withValues(alpha: 0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

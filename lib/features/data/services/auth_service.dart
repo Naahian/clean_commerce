@@ -94,9 +94,7 @@ class AuthService {
       return data;
     } on AuthException catch (e) {
       throw Exception(e.message);
-    } catch (e, stack) {
-      print(e);
-      print(stack);
+    } catch (e) {
       throw Exception("Unknown error while updating user/profile.");
     }
   }

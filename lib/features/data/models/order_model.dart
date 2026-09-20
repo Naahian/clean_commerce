@@ -25,7 +25,6 @@ class CreateOrderModel {
     required this.items,
   });
 
-  @override
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{
       'user_id': userId,
